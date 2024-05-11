@@ -15,11 +15,9 @@ class DataConverter:
 
     def _generate_convert_dicts(self, book_chars):
         K = len(book_chars)
-        char_to_ind = {}
-        ind_to_char = {}
-        for i in range(K):
-            char_to_ind[book_chars[i]] = i
-            ind_to_char[i] = book_chars[i]
+        positions = np.arange(0, K)
+        char_to_ind = dict(zip(book_chars, positions))
+        ind_to_char = dict(zip(positions, book_chars))
         return char_to_ind, ind_to_char
 
     def chunk_list(self, array, seq_length):
@@ -29,3 +27,11 @@ class DataConverter:
         input_text = chunk[:-1]
         target_text = chunk[1:]
         return input_text, target_text
+
+    def chunk_list_of_tuples(self, dataset, batch_size):
+        num_batches = len(dataset) // batch_size
+        chunked_list = []
+        for i in range(num_batches):
+            batch = tuple(np.vstack(arrays) for arrays in zip(*dataset[i * batch_size:(i + 1) * batch_size]))
+            chunked_list.append(batch)
+        return chunked_list

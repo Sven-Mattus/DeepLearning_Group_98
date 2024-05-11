@@ -1,40 +1,34 @@
-#load standard python libraries
 
-import math
 import numpy as np
-import pandas as pd
-
-# import own implementations of relevant models
-from LSTM import *
-from VanillaRNN import *
-
+from data_handler.DataConverter import DataConverter
+from data_handler.DataLoader import DataLoader
 
 if __name__ == "__main__":
-    
-    #relative paths to the data
-    text_file = r'goblet_book.txt'
+    # load data
+    book = DataLoader.load_data()
+    book_chars = sorted(set(book))
+    data_converter = DataConverter(book_chars)
+    book_as_ind = data_converter.chars_to_ind(book)
 
-    # Reading the text file
-    with open(text_file, 'r', encoding='utf-8') as file:
-        text = file.read()
+    # chunk text into sequences
+    SEQ_LENGTH = 100
+    nr_seqs_per_epochs = len(book_as_ind) // SEQ_LENGTH  # floor division
+    sequences = data_converter.chunk_list(book_as_ind, SEQ_LENGTH)
+    assert len(sequences) == nr_seqs_per_epochs
+    dataset = [(seq[:-1], seq[1:]) for seq in sequences]  # split into input and target text: list of tuples
 
-    # get only the unique charachters in oder of appearance
-    characters_list = list(set(text))
+    # split sequences into batches
+    BATCH_SIZE = 64
+    np.random.shuffle(dataset)  # shuffle
+    batched_dataset = data_converter.chunk_list_of_tuples(dataset, BATCH_SIZE)  # list of tuples that contain arrays of size batch_size x seq_length-1
 
-    # check the ascii code for special characters
-    # for i in range(len(characters_list)):
-    #     print(f'Character: {characters_list[i]}, ASCII Code: {ord(characters_list[i])}. \n')
+    # set hyperparameters
 
-    K = len(characters_list)
+    # initialize parameters
 
-    # create a set of key and value sequences
-    # to map keys and values to each other, use a python dict
-    position = np.arange(1,K)
+    # train LSTM
 
-    # initialize vectors for one-hot encoding
-    # for char_to_ind keys are unique chars and values is position of appearance
-    # ind_to_char works vice versa
-    char_to_ind = dict(zip(characters_list, position))
-    ind_to_char = dict(zip(position, characters_list))
+    # evaluate LSTM
 
-    test = 0
+    print()
+
