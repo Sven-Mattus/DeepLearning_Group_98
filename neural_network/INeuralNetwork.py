@@ -1,11 +1,11 @@
+
 class INeuralNetwork:
 
-    def train_network(self, params, dataset, hyperparams):
-        '''
+    def train_network(self, dataset, nr_iterations):
+        """
         trains the network
-        :param params: the trainable parameters of the network
         :param dataset: the dataset
-        :param hyperparams: the hyperparameters of the network
+        :param nr_iterations: the hyperparameters of the network
         :return: the trained parameters
-        '''
+        """
         pass

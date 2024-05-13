@@ -11,6 +11,7 @@ class DataLoader:
         book = DataLoader.load_book()
         return book
         # todo: chunk into training, validation and test data
+        # todo: preprocess data? (e.g. all lower case)
         # return x_train, y_train, x_validation, y_validation, x_test, y_test
 
     @staticmethod
