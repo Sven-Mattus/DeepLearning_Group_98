@@ -8,9 +8,9 @@ class DataConverter:
         self._char_to_ind, self._ind_to_char = self._generate_convert_dicts(book_chars)
 
     def chars_to_ind(self, chars):
-        ind = np.zeros(len(chars))
+        ind = np.zeros(len(chars), int)
         for i in range(len(chars)):
-            ind[i] = self._char_to_ind[chars[i]]
+            ind[i] = int(self._char_to_ind[chars[i]])
         return ind
 
     def _generate_convert_dicts(self, book_chars):

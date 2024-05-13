@@ -2,6 +2,7 @@
 import numpy as np
 from data_handler.DataConverter import DataConverter
 from data_handler.DataLoader import DataLoader
+from neural_network.LSTM import LSTM
 
 if __name__ == "__main__":
     # load data
@@ -22,12 +23,14 @@ if __name__ == "__main__":
     np.random.shuffle(dataset)  # shuffle
     batched_dataset = data_converter.chunk_list_of_tuples(dataset, BATCH_SIZE)  # list of tuples that contain arrays of size batch_size x seq_length-1
 
-    # set hyperparameters
-
-    # initialize parameters
+    # initialize network
+    ETA = 0.01
+    K = len(book_chars)
+    lstm = LSTM(input_size=K, output_size=len(book_chars), learning_rate=ETA)
 
     # train LSTM
-
+    NR_EPOCHS = 2
+    lstm.train_network(batched_dataset, nr_epochs=2)
     # evaluate LSTM
 
     print()
