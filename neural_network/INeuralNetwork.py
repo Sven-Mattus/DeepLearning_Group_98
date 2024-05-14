@@ -1,11 +1,12 @@
 
 class INeuralNetwork:
 
-    def train_network(self, dataset, nr_iterations):
+    def train_network(self, dataset, nr_epochs, batch_size):
         """
         trains the network
         :param dataset: the dataset
-        :param nr_iterations: the hyperparameters of the network
-        :return: the trained parameters
+        :param nr_epochs
+        :param batch_size
+        :return: the history
         """
         pass
