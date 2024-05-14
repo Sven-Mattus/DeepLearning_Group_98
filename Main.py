@@ -1,7 +1,8 @@
-import numpy as np
 
 from data_handler.DataConverter import DataConverter
+from data_handler.DatasetGenerator import DataGenerator
 from data_handler.DataLoader import DataLoader
+from evaluation.HistoryEvaluator import HistoryEvaluator
 from neural_network.LSTM import LSTM
 
 if __name__ == "__main__":
@@ -21,9 +22,9 @@ if __name__ == "__main__":
 
     # train LSTM
     NR_EPOCHS = 20
-    dataset_input, dataset_target = data_converter.create_dataset(book_as_ind, SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
+    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind, SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
     history = lstm.train_network(dataset_input[3:], dataset_target[3:], NR_EPOCHS, BATCH_SIZE)
-    # dataset = data_converter.create_tf_dataset(book_as_ind, SEQ_LENGTH)
+    # dataset = DataGenerator.create_tf_dataset(book_as_ind, SEQ_LENGTH)
     # history = lstm.train_network_with_tf_dataset(dataset, NR_EPOCHS)
-    lstm.render_training_history(history)
+    HistoryEvaluator.plot_loss(history)
 
