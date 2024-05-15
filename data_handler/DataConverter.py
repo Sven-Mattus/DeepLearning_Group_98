@@ -35,3 +35,9 @@ class DataConverter:
             batch = tuple(np.vstack(arrays) for arrays in zip(*dataset[i * batch_size:(i + 1) * batch_size]))
             chunked_list.append(batch)
         return chunked_list
+    
+    def one_hot_encode(chars, K):
+        """ Returns a one-hot encoded vector for character `char`."""
+        one_hot = np.zeros((K, 1))
+        one_hot[self.chars_to_ind(char)] = 1
+        return one_hot
