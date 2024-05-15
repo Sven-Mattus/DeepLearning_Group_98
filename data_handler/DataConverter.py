@@ -8,10 +8,26 @@ class DataConverter:
         self._char_to_ind, self._ind_to_char = self._generate_convert_dicts(book_chars)
 
     def chars_to_ind(self, chars):
+        """
+        converts a string into 1D array of indices
+        :param chars: string
+        :return:    1D array of indices
+        """
         ind = np.zeros(len(chars), int)
         for i in range(len(chars)):
             ind[i] = int(self._char_to_ind[chars[i]])
         return ind
+
+    def ind_to_char(self, inds):
+        """
+        converts a string into 1D array of indices
+        :param chars: string
+        :return:    1D array of indices
+        """
+        chars = ""
+        for i in range(len(chars)):
+            chars = chars + self._ind_to_char[inds[i]]
+        return chars
 
     def _generate_convert_dicts(self, book_chars):
         K = len(book_chars)

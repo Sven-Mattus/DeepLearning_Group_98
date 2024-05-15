@@ -27,4 +27,5 @@ if __name__ == "__main__":
     # dataset = DataGenerator.create_tf_dataset(book_as_ind, SEQ_LENGTH)
     # history = lstm.train_network_with_tf_dataset(dataset, NR_EPOCHS)
     HistoryEvaluator.plot_loss(history)
+    print(lstm.generate_text(start_string=u"ROMEO: ", data_converter=data_converter))
 
