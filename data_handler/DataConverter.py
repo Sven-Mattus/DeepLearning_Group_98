@@ -6,6 +6,7 @@ class DataConverter:
     def __init__(self, book_chars):
         self._book_chars = book_chars
         self._char_to_ind, self._ind_to_char = self._generate_convert_dicts(book_chars)
+        self.K = (len(self._char_to_ind), )
 
     def chars_to_ind(self, chars):
         ind = np.zeros(len(chars), int)
@@ -36,8 +37,9 @@ class DataConverter:
             chunked_list.append(batch)
         return chunked_list
     
-    def one_hot_encode(chars, K):
-        """ Returns a one-hot encoded vector for character `char`."""
-        one_hot = np.zeros((K, 1))
-        one_hot[self.chars_to_ind(char)] = 1
+    def one_hot_encode(self, chars):
+        one_hot = np.zeros((self.K, chars.shape[1]))
+        for i in range(len(chars)):
+            ind = self.char_to_ind(chars(i))
+            one_hot[ind, i] = 1
         return one_hot
