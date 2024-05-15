@@ -43,6 +43,12 @@ class LSTM:
             stateful=True,
             recurrent_initializer=tf.keras.initializers.GlorotNormal()
         ))
+        model.add(tf.keras.layers.LSTM(
+            units=nr_rnn_units,
+            return_sequences=True,
+            stateful=True,
+            recurrent_initializer=tf.keras.initializers.GlorotNormal()
+        ))
         model.add(tf.keras.layers.Dense(vocab_size))
         return model
 
