@@ -13,6 +13,12 @@ class DataConverter:
         for i in range(len(chars)):
             ind[i] = int(self._char_to_ind[chars[i]])
         return ind
+    
+    def ind_to_chars(self, indices):
+        chars = []
+        for i in range(len(indices)):
+            chars.append(self._ind_to_char(indices[i]))
+        return chars
 
     def _generate_convert_dicts(self, book_chars):
         K = len(book_chars)
@@ -43,3 +49,8 @@ class DataConverter:
             ind = self.char_to_ind(chars(i))
             one_hot[ind, i] = 1
         return one_hot
+    
+    def one_hot_to_chars(self, one_hot):
+        indices = np.argmax(one_hot, axis=0)
+        chars = self.ind_to_chars(indices)
+        return chars

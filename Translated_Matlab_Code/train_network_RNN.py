@@ -2,6 +2,7 @@ import numpy as np
 import forward_pass as fp
 import gradient_RNN as gradRNN
 from ..data_handler import DataConverter
+from ..math_function import math_functions as mathf
 
 
 def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, ind_to_char):
@@ -16,8 +17,8 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, in
     for i in range(nr_iterations):
         X_chars = book_data[e:e+seq_length-1, :]
         Y_chars = book_data[e+1:e+seq_length, :]
-        X = charsToOneHot(X_chars, K, char_to_ind)
-        Y = charsToOneHot(Y_chars, K, char_to_ind)
+        X = data_converter.one_hot_encode(X_chars)
+        Y = data_converter.one_hot_encode(Y_chars)
         [loss, hs, as_, P] = fp.ForwardPass(hprev, RNN, X, Y)
         if i==0:
             smooth_loss = loss
@@ -30,7 +31,9 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, in
 
         if(i % 10000 == 0):
             print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
-            print(['iteration ', str(i), ': ', oneHotToChars(SynthesizeText(RNN, np.zeros(m,1), ' ', 200, char_to_ind), ind_to_char)])
+            synthesized_data_raw = SynthesizeText(RNN, np.zeros(m,1), ' ', 200, data_converter)
+            synthesized_data = data_converter.one_hot_to_chars(synthesized_data_raw)
+            print(['iteration ', str(i), ': ', synthesized_data])
         
         e = e+seq_length
         if e + seq_length > len(book_data):
@@ -51,27 +54,26 @@ def AdaGradUpdateStep(RNN, grads, mu, G):
     
     return new_RNN, G
     
-def SynthesizeText(RNN, h0, x0, n, char_to_ind):
-    K = RNN.c.shape 0)
-    ht = h0 % size mx1
-    xt = charsToOneHot(x0, K, char_to_ind)
-    xiis = zeros(n, 0)
-    Y = zeros(K, n)
-    for t = 1:n
+def SynthesizeText(RNN, h0, x0, n, data_converter):
+    K = RNN.c.shape[0]
+    ht = h0
+    xt = data_converter.one_hot_encode(x0)
+    #xiis = np.zeros(n, 0)
+    Y = np.zeros(K, n)
+    for t in range(n+1):
         at = RNN.W * ht + RNN.U * xt + RNN.b
-        ht = tanh(at)
+        ht = mathf.tanh(at)
         ot = RNN.V * ht + RNN.c
-        pt = SoftMax(ot)
+        pt = mathf.SoftMax(ot)
         
-        % sample next x
-        cp = cumsum(pt)
-        a = rand
-        ixs = find(cp-a >0)
-        ii = ixs(1) % index of predicted char
+        cp = mathf.cumsum(pt)
+        a = np.rand
+        ixs = np.where(cp - a > 0)[0]
+        ii = ixs[0]
 
-        xt = zeros(K,0)
-        xt(ii) = 1
-        xiis(t) = ii
-        Y(ii, t) = 1
+        xt = np.zeros(K,0)
+        xt[ii] = 1
+    #    xiis[t] = ii
+        Y[ii, t] = 1
 
     return Y
