@@ -1,7 +1,6 @@
-
-import numpy as np
 import tensorflow as tf
-from matplotlib import pyplot as plt
+
+from data_handler.DataConverter import DataConverter
 
 
 class LSTM:
@@ -58,4 +57,28 @@ class LSTM:
             y_pred=logits,
             from_logits=True
         )
+
+    def generate_text(self, start_string, data_converter: DataConverter, num_generate=1000, temperature=1.0):
+        input_indices = data_converter.chars_to_ind(start_string)
+        input_indices = tf.expand_dims(input_indices, 0)
+        text_generated = []
+        # Here batch size == 1.
+        self._model.reset_states()
+        for char_index in range(num_generate):
+            predictions = self._model(input_indices)
+            # remove the batch dimension
+            predictions = tf.squeeze(predictions, 0)
+            # Using a categorical distribution to predict the character returned by the model.
+            predictions = predictions / temperature
+            predicted_id = tf.random.categorical(
+                predictions,
+                num_samples=1
+            )[-1, 0].numpy()
+
+            # We pass the predicted character as the next input to the model
+            # along with the previous hidden state.
+            input_indices = tf.expand_dims([predicted_id], 0)
+            text_generated.append(data_converter.ind_to_char(predicted_id))
+
+        return (start_string + ''.join(text_generated))
 
