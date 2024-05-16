@@ -24,7 +24,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
         
         smooth_loss = .999* smooth_loss + .001 * loss
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
-        [RNN, Gradients] = AdaGradUpdateStep(RNN, grads, eta, G)
+        [RNN, Gradients] = AdaGradUpdateStep(RNN, grads, eta, Gradients)
         hprev = hs[:, hs.shape(1)]
         smooth_losses.append(smooth_loss)
 
@@ -39,17 +39,16 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
             e = 0
             hprev = np.zeros((m,1))
         
-    
     new_RNN = RNN
 
     return new_RNN, smooth_losses
 
 
-def AdaGradUpdateStep(RNN, grads, mu, G):
+def AdaGradUpdateStep(RNN, grads, eta, G):
     new_RNN = {}
-    for key in RNN.keys:
+    for key in RNN.keys():
         G[key] = G[key] + grads[key] * grads[key]
-        new_RNN[key] = RNN[key] - (mu/np.sqrt(G[key]) + np.finfo(np.float64).eps) * grads[key]
+        new_RNN[key] = RNN[key] - (eta/np.sqrt(G[key]) + np.finfo(np.float64).eps) * grads[key]
     
     return new_RNN, G
     
