@@ -16,3 +16,7 @@ def tanh(x):
 def tanh_derivative(t):
     tanh_deriv = 1 - tanh(t)*tanh(t)
     return tanh_deriv
+
+def softmax(s):
+    softmax = np.exp(s) / sum(np.exp(s))
+    return softmax

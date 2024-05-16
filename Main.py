@@ -37,7 +37,6 @@ if __name__ == "__main__":
 
     #Train the RNN
     # convert the book chars back to ind
-    book_as_char = data_converter.ind_to_chars(book_as_ind)
     sig = .01 # sigma for random distribution
     ETA = 0.01 #learning rate
     K = len(book_chars)
@@ -45,6 +44,6 @@ if __name__ == "__main__":
 
     RNN = VanillaRNN(sig, m, K)
 
-    TrainNetwork(book_chars, 10, SEQ_LENGTH, RNN, book_as_ind, ETA, book_as_char)
+    TrainNetwork(book, 10, SEQ_LENGTH, RNN, ETA, data_converter)
 
     print()

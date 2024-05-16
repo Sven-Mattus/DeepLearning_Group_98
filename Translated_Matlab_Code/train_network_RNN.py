@@ -5,18 +5,17 @@ from data_handler import DataConverter
 from math_function import math_functions as mathf
 
 
-def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, ind_to_char):
+def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter):
     m = RNN.b.shape[0]
     K = RNN.c.shape[0]
     smooth_losses = []
-    G = dict('b', np.zeros((m,1)), 'c', np.zeros((K,1)), 'U', np.zeros((m, K)), 'W', np.zeros((m, m)), 'V', np.zeros((K, m)))
+    Gradients = {'b': np.zeros((m,1)), 'c': np.zeros((K,1)), 'U': np.zeros((m, K)), 'W': np.zeros((m, m)), 'V': np.zeros((K, m))}
     e = 0
     hprev = np.zeros((m,1))
-    data_converter = DataConverter(book_data)
     
     for i in range(nr_iterations):
-        X_chars = book_data[e:e+seq_length-1, :]
-        Y_chars = book_data[e+1:e+seq_length, :]
+        X_chars = book_data[e:e+seq_length]
+        Y_chars = book_data[e+1:e+seq_length+1]
         X = data_converter.one_hot_encode(X_chars)
         Y = data_converter.one_hot_encode(Y_chars)
         [loss, hs, as_, P] = fp.ForwardPass(hprev, RNN, X, Y)
@@ -25,7 +24,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, in
         
         smooth_loss = .999* smooth_loss + .001 * loss
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
-        [RNN, G] = AdaGradUpdateStep(RNN, grads, eta, G)
+        [RNN, Gradients] = AdaGradUpdateStep(RNN, grads, eta, G)
         hprev = hs[:, hs.shape(1)]
         smooth_losses.append(smooth_loss)
 
@@ -37,8 +36,8 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, in
         
         e = e+seq_length
         if e + seq_length > len(book_data):
-            e = 1
-            hprev = np.zeros(m,1)
+            e = 0
+            hprev = np.zeros((m,1))
         
     
     new_RNN = RNN

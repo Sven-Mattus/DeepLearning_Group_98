@@ -16,9 +16,15 @@ class DataConverter:
     
     def ind_to_chars(self, indices):
         chars = []
-        char_dict = self._ind_to_char(indices)
-        for value in char_dict.values():
-            chars.append(value)
+        # for i in range(len(indices)):
+        #     char_dict = self._ind_to_char(indices[i])
+        # for value in self._ind_to_char.values():
+        #         chars.append(value)
+
+        for i in range(len(indices)):
+            char = self._ind_to_char[indices[i]]
+            chars.append(char)
+        print(chars[0:35])
         return chars
 
     def _generate_convert_dicts(self, book_chars):
@@ -45,9 +51,9 @@ class DataConverter:
         return chunked_list
     
     def one_hot_encode(self, chars):
-        one_hot = np.zeros((self.K, chars.shape[1]))
+        one_hot = np.zeros((self.K[0], len(chars)))
         for i in range(len(chars)):
-            ind = self.char_to_ind(chars(i))
+            ind = self._char_to_ind[chars[i]]
             one_hot[ind, i] = 1
         return one_hot
     
