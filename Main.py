@@ -3,6 +3,8 @@ import numpy as np
 from data_handler.DataConverter import DataConverter
 from data_handler.DataLoader import DataLoader
 from neural_network.LSTM import LSTM
+from Translated_Matlab_Code.train_network_RNN import TrainNetwork
+from Translated_Matlab_Code.VanillaRNN_Class import VanillaRNN
 
 if __name__ == "__main__":
     # load data
@@ -23,14 +25,27 @@ if __name__ == "__main__":
     np.random.shuffle(dataset)  # shuffle
     batched_dataset = data_converter.chunk_list_of_tuples(dataset, BATCH_SIZE)  # list of tuples that contain arrays of size batch_size x seq_length-1
 
-    # initialize network
-    ETA = 0.01
-    K = len(book_chars)
-    lstm = LSTM(input_size=K, output_size=len(book_chars), learning_rate=ETA)
+    # # initialize network
+    # ETA = 0.01
+    # K = len(book_chars)
+    # lstm = LSTM(input_size=K, output_size=len(book_chars), learning_rate=ETA)
 
-    # train LSTM
-    NR_EPOCHS = 2
-    lstm.train_network(batched_dataset, nr_epochs=2)
-    # evaluate LSTM
+    # # train LSTM
+    # NR_EPOCHS = 2
+    # lstm.train_network(batched_dataset, nr_epochs=2)
+    # # evaluate LSTM
+
+    #Train the RNN
+    # convert the book chars back to ind
+    book_as_char = data_converter.ind_to_char(book_as_ind)
+
+    sig = .01 # sigma for random distribution
+    ETA = 0.01 #learning rate
+    K = len(book_chars)
+    m = 100 # dimensionality of hidden state
+
+    RNN = VanillaRNN(sig, m, K)
+
+    TrainNetwork(book_chars, 10, SEQ_LENGTH, RNN, book_as_ind, ETA, book_as_char)
 
     print()

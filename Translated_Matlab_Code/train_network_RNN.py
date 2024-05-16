@@ -1,5 +1,5 @@
 import numpy as np
-import forward_pass as fp
+from forward_pass import ForwardPass
 import gradient_RNN as gradRNN
 from ..data_handler import DataConverter
 from ..math_function import math_functions as mathf
@@ -19,7 +19,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN, char_to_ind, eta, in
         Y_chars = book_data[e+1:e+seq_length, :]
         X = data_converter.one_hot_encode(X_chars)
         Y = data_converter.one_hot_encode(Y_chars)
-        [loss, hs, as_, P] = fp.ForwardPass(hprev, RNN, X, Y)
+        [loss, hs, as_, P] = ForwardPass(hprev, RNN, X, Y)
         if i==0:
             smooth_loss = loss
         
