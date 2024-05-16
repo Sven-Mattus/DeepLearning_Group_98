@@ -40,7 +40,7 @@ if __name__ == "__main__":
     sig = .01 # sigma for random distribution
     ETA = 0.01 #learning rate
     K = len(book_chars)
-    m = 100 # dimensionality of hidden state
+    m = 90 # dimensionality of hidden state
 
     RNN = VanillaRNN(sig, m, K)
 

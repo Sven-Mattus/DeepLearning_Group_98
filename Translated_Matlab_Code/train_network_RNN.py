@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from Translated_Matlab_Code import forward_pass as fp
 from Translated_Matlab_Code import gradient_RNN as gradRNN
 from data_handler import DataConverter
@@ -25,12 +26,12 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
         smooth_loss = .999* smooth_loss + .001 * loss
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
         [RNN, Gradients] = AdaGradUpdateStep(RNN, grads, eta, Gradients)
-        hprev = hs[:, hs.shape(1)]
+        hprev = hs[:, hs.shape[1] - 1].reshape(-1, 1)
         smooth_losses.append(smooth_loss)
 
         if(i % 10000 == 0):
             print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
-            synthesized_data_raw = SynthesizeText(RNN, np.zeros(m,1), ' ', 200, data_converter)
+            synthesized_data_raw = SynthesizeText(RNN, np.zeros((m,1)), ' ', 200, data_converter)
             synthesized_data = data_converter.one_hot_to_chars(synthesized_data_raw)
             print(['iteration ', str(i), ': ', synthesized_data])
         
@@ -45,11 +46,17 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
 
 
 def AdaGradUpdateStep(RNN, grads, eta, G):
-    new_RNN = {}
-    for key in RNN.keys():
+    new_RNN = copy.deepcopy(RNN)
+    for attribute, value in RNN.__dict__.items():
+        #beacuse we use classes and dicts here
+        key = attribute 
         G[key] = G[key] + grads[key] * grads[key]
-        new_RNN[key] = RNN[key] - (eta/np.sqrt(G[key]) + np.finfo(np.float64).eps) * grads[key]
-    
+        #new_RNN[attribute] = getattr(RNN, attribute) - (eta/np.sqrt(G[key]) + np.finfo(np.float64).eps) * grads[key]   
+        new_value = getattr(RNN, attribute) - eta/np.sqrt(G[key] + np.finfo(np.float64).eps) * grads[key] 
+        setattr(new_RNN, attribute, new_value)
+        # update = getattr(G, attribute) + getattr(grads, attribute) * getattr(grads, attribute)
+        # setattr(G, attribute, update)
+        # setattr(new_RNN, attribute, getattr(G, attribute) ) 
     return new_RNN, G
     
 def SynthesizeText(RNN, h0, x0, n, data_converter):
