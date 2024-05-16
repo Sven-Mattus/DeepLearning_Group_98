@@ -1,5 +1,5 @@
 import numpy as np
-from ..math_function import math_functions as mathf
+from math_function import math_functions as mathf
 
 
 def compute_gradients_ana(hs, as_, Y, X, P, RNN):

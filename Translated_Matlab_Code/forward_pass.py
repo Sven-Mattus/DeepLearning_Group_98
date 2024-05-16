@@ -1,5 +1,5 @@
 import numpy as np
-from ..math_function import math_functions as mathf
+from math_function import math_functions as mathf
 
 def ForwardPass(h0, RNN, X, Y):
     ht = h0 # size mx1

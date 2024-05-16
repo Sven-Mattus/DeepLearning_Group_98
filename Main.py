@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     #Train the RNN
     # convert the book chars back to ind
-    book_as_char = data_converter.ind_to_char(book_as_ind)
+    book_as_char = data_converter.ind_to_chars(book_as_ind)
 
     sig = .01 # sigma for random distribution
     ETA = 0.01 #learning rate
