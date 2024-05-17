@@ -24,9 +24,8 @@ def compute_gradients_ana(hs, as_, Y, X, P, RNN):
 
 def calculate_gradient_h(hs, grad_o, RNN, as_):
     grad_h = np.zeros((grad_o.shape[0], hs.shape[0]))
-    T = grad_h.shape[0] - 1
-    grad_h[T,:] = np.dot(grad_o[T,:], RNN.V)
-    for t in range(T, 0, -1):
-        grad_h[T,:] = np.dot(grad_o[T,:], RNN.V) + np.dot(grad_h[t,:] * (1 - mathf.tanh(as_[t]) * mathf.tanh(as_[t])).T, RNN.W)
-    
+    T = grad_h.shape[0] - 1 # account for different index in python
+    grad_h[T, :] = np.dot(grad_o[T,:], RNN.V)
+    for t in range(T-1, -1, -1):
+        grad_h[t,:] = np.dot(grad_o[t,:], RNN.V) + np.dot(grad_h[t+1,:] * (1 - mathf.tanh(as_[:, t+1]) * mathf.tanh(as_[:, t+1])).T, RNN.W)
     return grad_h

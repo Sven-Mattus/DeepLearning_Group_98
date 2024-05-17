@@ -49,10 +49,11 @@ def AdaGradUpdateStep(RNN, grads, eta, G):
     new_RNN = copy.deepcopy(RNN)
     for attribute, value in RNN.__dict__.items():
         #beacuse we use classes and dicts here
-        key = attribute 
-        G[key] = G[key] + grads[key] * grads[key]
+        key = attribute
+        grads_squared = grads[key] * grads[key]
+        G[key] = G[key] + grads_squared.reshape(G[key].shape)
         #new_RNN[attribute] = getattr(RNN, attribute) - (eta/np.sqrt(G[key]) + np.finfo(np.float64).eps) * grads[key]   
-        new_value = getattr(RNN, attribute) - eta/np.sqrt(G[key] + np.finfo(np.float64).eps) * grads[key] 
+        new_value = getattr(RNN, attribute) - eta/np.sqrt(G[key] + np.finfo(np.float64).eps) * grads[key].reshape(G[key].shape)
         setattr(new_RNN, attribute, new_value)
         # update = getattr(G, attribute) + getattr(grads, attribute) * getattr(grads, attribute)
         # setattr(G, attribute, update)
@@ -64,19 +65,19 @@ def SynthesizeText(RNN, h0, x0, n, data_converter):
     ht = h0
     xt = data_converter.one_hot_encode(x0)
     #xiis = np.zeros(n, 0)
-    Y = np.zeros(K, n)
-    for t in range(n+1):
-        at = RNN.W * ht + RNN.U * xt + RNN.b
+    Y = np.zeros((K, n))
+    for t in range(n):
+        at = np.dot(RNN.W, ht) + np.dot(RNN.U, xt) + RNN.b
         ht = mathf.tanh(at)
-        ot = RNN.V * ht + RNN.c
-        pt = mathf.SoftMax(ot)
+        ot = np.dot(RNN.V, ht) + RNN.c
+        pt = mathf.softmax(ot)
         
-        cp = mathf.cumsum(pt)
-        a = np.rand
+        cp = np.cumsum(pt)
+        a = np.random.rand()
         ixs = np.where(cp - a > 0)[0]
-        ii = ixs[0]
+        ii = ixs
 
-        xt = np.zeros(K,0)
+        xt = np.zeros((K,0))
         xt[ii] = 1
     #    xiis[t] = ii
         Y[ii, t] = 1
