@@ -14,7 +14,7 @@ if __name__ == "__main__":
     book_as_ind = data_converter.chars_to_ind(book)
 
     # chunk text into sequences
-    SEQ_LENGTH = 100
+    SEQ_LENGTH = 10
     nr_seqs_per_epochs = len(book_as_ind) // SEQ_LENGTH  # floor division
     sequences = data_converter.chunk_list(book_as_ind, SEQ_LENGTH)
     assert len(sequences) == nr_seqs_per_epochs
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     sig = .01 # sigma for random distribution
     ETA = 0.01 #learning rate
     K = len(book_chars)
-    m = 90 # dimensionality of hidden state
+    m = 5 # dimensionality of hidden state
 
     RNN = VanillaRNN(sig, m, K)
 
