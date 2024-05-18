@@ -1,7 +1,6 @@
-
 from data_handler.DataConverter import DataConverter
-from data_handler.DatasetGenerator import DataGenerator
 from data_handler.DataLoader import DataLoader
+from data_handler.DatasetGenerator import DataGenerator
 from evaluation.Evaluator import Evaluator
 from neural_network.LSTM import LSTM
 
@@ -21,13 +20,21 @@ if __name__ == "__main__":
     lstm = LSTM(vocab_size=K, embedding_dim=256, nr_rnn_units=1024, batch_size=BATCH_SIZE)
 
     # train LSTM
-    NR_EPOCHS = 20
-    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind, SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
-    history = lstm.train_network(dataset_input[3:], dataset_target[3:], NR_EPOCHS, BATCH_SIZE)
-    # dataset = DataGenerator.create_tf_dataset(book_as_ind, SEQ_LENGTH)
-    # history = lstm.train_network_with_tf_dataset(dataset, NR_EPOCHS)
+    validation_set_len = BATCH_SIZE * SEQ_LENGTH * 2
+    NR_EPOCHS = 1
+
+    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[validation_set_len:int(0.25*len(book_as_ind))],
+                                                                       SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
+    val_input, val_target = DataGenerator.create_array_dataset(book_as_ind[:validation_set_len],
+                                                               SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
+    history = lstm.train_network(dataset_input[len(dataset_input) % BATCH_SIZE:],
+                                 dataset_target[len(dataset_target) % BATCH_SIZE:], NR_EPOCHS, BATCH_SIZE, val_input,
+                                 val_target)
+
+    # dataset = DataGenerator.create_tf_dataset(book_as_ind[validation_set_len: len(book_as_ind)], SEQ_LENGTH)
+    # dataset_val = DataGenerator.create_tf_dataset(book_as_ind[:validation_set_len], SEQ_LENGTH)
+    # history = lstm.train_network_with_tf_dataset(dataset, NR_EPOCHS, dataset_val)
+
     Evaluator.plot_history_loss(history)
 
-
-    print(lstm.generate_text(start_string=u"ROMEO: ", data_converter=data_converter))
-
+    print(lstm.generate_text(start_string=" ", data_converter=data_converter))

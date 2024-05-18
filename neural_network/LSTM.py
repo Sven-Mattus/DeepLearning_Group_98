@@ -13,20 +13,26 @@ class LSTM:
             loss=self._loss
         )
 
-    def train_network(self, dataset_input, dataset_target, nr_epochs, batch_size):
+    def train_network(self, dataset_input, dataset_target, nr_epochs, batch_size, val_input, val_target):
         history = self._model.fit(
             x=dataset_input,
             y=dataset_target,
             epochs=nr_epochs,
             batch_size=batch_size,
-            shuffle=False  # todo remove
+            # We pass some validation for monitoring validation loss and metrics at the end of each epoch
+            validation_data=(val_input, val_target),
+            # callbacks=[callback]
         )
         return history
 
-    def train_network_with_tf_dataset(self, dataset, nr_epochs):
+    def train_network_with_tf_dataset(self, dataset, nr_epochs, dataset_val):
+        # steps_per_epoch = (len(dataset) // batch_size) // seq_length
+        # validation_steps = (len(dataset_val) // batch_size) // seq_length  # if you have validation data
         history = self._model.fit(
             x=dataset,
             epochs=nr_epochs,
+            validation_data=dataset_val,
+            # callbacks=[callback]
         )
         return history
 
@@ -35,12 +41,6 @@ class LSTM:
         model.add(tf.keras.layers.Embedding(
             input_dim=vocab_size,
             output_dim=embedding_dim,
-        ))
-        model.add(tf.keras.layers.LSTM(
-            units=nr_rnn_units,
-            return_sequences=True,
-            stateful=True,
-            recurrent_initializer=tf.keras.initializers.GlorotNormal()
         ))
         model.add(tf.keras.layers.LSTM(
             units=nr_rnn_units,
@@ -63,11 +63,10 @@ class LSTM:
         input_indices = tf.expand_dims(input_indices, 0)
         text_generated = []
         # Here batch size == 1.
-        self._model.reset_states()
         for char_index in range(num_generate):
             predictions = self._model(input_indices)
             # remove the batch dimension
-            predictions = tf.squeeze(predictions, 0)
+            # predictions = tf.squeeze(predictions, 0)
             # Using a categorical distribution to predict the character returned by the model.
             predictions = predictions / temperature
             predicted_id = tf.random.categorical(
@@ -81,4 +80,3 @@ class LSTM:
             text_generated.append(data_converter.ind_to_char(predicted_id))
 
         return (start_string + ''.join(text_generated))
-
