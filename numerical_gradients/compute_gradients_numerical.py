@@ -2,12 +2,12 @@ import numpy as np
 import Translated_Matlab_Code.forward_pass as fp
 import copy
 
-def ComputeGradsNum(X, Y, RNN, h):
+def compute_gradients_num(X, Y, RNN, h):
     num_grads = {}
     for f in vars(RNN):
         print('Computing numerical gradient for')
         print('Field name:', f)
-        num_grads[f] = ComputeGradNumSlow(X, Y, f, RNN, h)
+        num_grads[f] = compute_grad_num_slow(X, Y, f, RNN, h)
     return num_grads
 
 """def ComputeGradNumSlow(X, Y, f, RNN, h):

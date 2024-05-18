@@ -16,15 +16,9 @@ class DataConverter:
     
     def ind_to_chars(self, indices):
         chars = []
-        # for i in range(len(indices)):
-        #     char_dict = self._ind_to_char(indices[i])
-        # for value in self._ind_to_char.values():
-        #         chars.append(value)
-
         for i in range(len(indices)):
             char = self._ind_to_char[indices[i]]
             chars.append(char)
-        print(chars[0:35])
         return chars
 
     def _generate_convert_dicts(self, book_chars):

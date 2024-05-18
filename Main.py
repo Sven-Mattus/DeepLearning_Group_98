@@ -14,7 +14,7 @@ if __name__ == "__main__":
     book_as_ind = data_converter.chars_to_ind(book)
 
     # chunk text into sequences
-    SEQ_LENGTH = 10
+    SEQ_LENGTH = 15
     nr_seqs_per_epochs = len(book_as_ind) // SEQ_LENGTH  # floor division
     sequences = data_converter.chunk_list(book_as_ind, SEQ_LENGTH)
     assert len(sequences) == nr_seqs_per_epochs
@@ -44,6 +44,6 @@ if __name__ == "__main__":
 
     RNN = VanillaRNN(sig, m, K)
 
-    TrainNetwork(book, 1000000, SEQ_LENGTH, RNN, ETA, data_converter)
+    TrainNetwork(book, 100000, SEQ_LENGTH, RNN, ETA, data_converter)
 
     print()
