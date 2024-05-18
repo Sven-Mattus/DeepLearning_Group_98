@@ -24,7 +24,7 @@ def ComputeGradsNum(X, Y, RNN, h):
         grad.flat[i] = (l2 - l1) / (2 * h)
     return grad
 """
-def ComputeGradNumSlow(X, Y, param_name, RNN, hprev):
+def compute_grad_num_slow(X, Y, param_name, RNN, hprev):
     step_size = 0.0001
     # Get the parameter as a numpy array
     param = getattr(RNN, param_name)

@@ -4,7 +4,7 @@ from Translated_Matlab_Code import forward_pass as fp
 from Translated_Matlab_Code import gradient_RNN as gradRNN
 from data_handler import DataConverter
 from math_function import math_functions as mathf
-import numerical_gradients.ComputeGradientsNumerical as gradnum
+import numerical_gradients.compute_gradients_numerical as gradnum
 import numerical_gradients.compare_gradients as compare
 
 
@@ -27,7 +27,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
         
         smooth_loss = .999* smooth_loss + .001 * loss
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
-        grads_num = gradnum.ComputeGradsNum(X, Y, RNN, hprev)
+        grads_num = gradnum.compute_grad_num_slow(X, Y, RNN, hprev)
 
         compare.compare_gradients(grads_num, grads)
         
