@@ -6,7 +6,8 @@ def synthesize_text(RNN, h0, x0, n, data_converter):
     ht = h0
     xt = data_converter.one_hot_encode(x0)
     #xiis = np.zeros(n, 0)
-    Y = np.zeros((K, n))
+    #Y = np.zeros((K, n))
+    output_string = []
     for t in range(n):
         at = np.dot(RNN.W, ht) + np.dot(RNN.U, xt) + RNN.b
         ht = mathf.tanh(at)
@@ -18,12 +19,13 @@ def synthesize_text(RNN, h0, x0, n, data_converter):
         ixs = np.where(cp - a > 0)[0][0]
         ii = ixs
 
-        xt = np.zeros((K,0))
+        xt = np.zeros((K,1))
         xt[ii, 0] = 1
     #    xiis[t] = ii
-        Y[ii, t] = 1
-
-    return Y
+        character = data_converter.one_hot_to_chars(xt)
+        #Y[ii, t] = 
+        output_string.append(character)
+    return output_string
 
 def print_text():
     pass

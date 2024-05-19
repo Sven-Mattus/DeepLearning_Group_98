@@ -39,11 +39,15 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
 
         if(i % 10000 == 0):
             print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
-            synthesized_data_raw = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
-            synthesized_data = data_converter.one_hot_to_chars(synthesized_data_raw)
-            print(['iteration ', str(i), ': ', synthesized_data])
+            synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
+
+            #print(['iteration ', str(i), ': ', synthesized_data])
+            print('Synthesized Text:', end=' ')
+            for char in synthesized_data:
+                print(char[0], end='')
+            print('')
         
-        if(i % 100 == 0):
+        if(i % 1000 == 0):
             print('iteration: ', i, 'smooth_loss:', smooth_loss)
 
         e = e+seq_length

@@ -44,6 +44,6 @@ if __name__ == "__main__":
 
     RNN = VanillaRNN(sig, m, K)
 
-    TrainNetwork(book, 100000, SEQ_LENGTH, RNN, ETA, data_converter)
+    TrainNetwork(book, 400000, SEQ_LENGTH, RNN, ETA, data_converter)
 
     print()
