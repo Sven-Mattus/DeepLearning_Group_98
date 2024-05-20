@@ -2,8 +2,8 @@ import numpy as np
 import copy
 from Translated_Matlab_Code import forward_pass as fp
 from Translated_Matlab_Code import gradient_RNN as gradRNN
-import numerical_gradients.compute_gradients_numerical as gradnum
-import numerical_gradients.compare_gradients as compare
+import evaluation.compute_gradients_numerical as gradnum
+import evaluation.compare_gradients as compare
 import evaluation.synthesize_text as synthesize
 
 
@@ -27,9 +27,10 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
         
         smooth_loss = .999* smooth_loss + .001 * loss
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
-        #grads_num = gradnum.compute_gradients_num(X, Y, RNN, hprev)
+        grads_num = gradnum.compute_gradients_num(X, Y, RNN, hprev)
 
-        #compare.compare_gradients(grads_num, grads)
+        compare.compare_gradients_absolut(grads_num, grads)
+        compare.compare_gradients_relative(grads_num, grads)
         
         [RNN, Gradients] = AdaGradUpdateStep(RNN, grads, eta, Gradients)
         hprev = hs[:, hs.shape[1] - 1].reshape(-1, 1)
@@ -37,15 +38,15 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
 
 
 
-        if(i % 10000 == 0):
-            print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
-            synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
+        # if(i % 10000 == 0):
+        #     print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
+        #     synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
 
-            #print(['iteration ', str(i), ': ', synthesized_data])
-            print('Synthesized Text:', end=' ')
-            for char in synthesized_data:
-                print(char[0], end='')
-            print('')
+        #     #print(['iteration ', str(i), ': ', synthesized_data])
+        #     print('Synthesized Text:', end=' ')
+        #     for char in synthesized_data:
+        #         print(char[0], end='')
+        #     print('')
         
         if(i % 1000 == 0):
             print('iteration: ', i, 'smooth_loss:', smooth_loss)

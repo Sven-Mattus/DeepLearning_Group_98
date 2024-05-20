@@ -21,11 +21,8 @@ def synthesize_text(RNN, h0, x0, n, data_converter):
 
         xt = np.zeros((K,1))
         xt[ii, 0] = 1
-    #    xiis[t] = ii
+
         character = data_converter.one_hot_to_chars(xt)
-        #Y[ii, t] = 
+        #Y[ii, t] = xt[:, 0]
         output_string.append(character)
     return output_string
-
-def print_text():
-    pass

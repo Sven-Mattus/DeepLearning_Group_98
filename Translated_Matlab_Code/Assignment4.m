@@ -102,7 +102,8 @@ function grads = ComputeGradsAna(hs, as, Y, X, P, RNN)
     grad_h = CalculateGradH(hs, grad_o, RNN, as);
     grad_a = - grad_h .* transpose(1 - tanh(as) .* tanh(as));
     grad_W = - transpose(grad_a) * transpose(hs(:,1:n));
-    grad_V =  transpose(grad_o) * transpose(hs(:, 2:n+1)); 
+    grad_V =  transpose(grad_o) * transpose(hs(:, 2:n+1));
+    
     grad_U = - transpose(grad_a) * transpose(X);
     grad_c = transpose(sum(grad_o, 1)); 
     grad_b = transpose(- sum(grad_a, 1));

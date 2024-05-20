@@ -16,9 +16,9 @@ def compute_gradients_ana(hs, as_, Y, X, P, RNN):
 
     #Implement clipping
     # Iterate over the dictionary and apply np.clip to constrain values
-    for key in grads.keys():
+    #for key in grads.keys():
         #grads[key] = max(min(grads[key], 5), -5)
-        grads[key] = np.clip(grads[key], -5, 5)
+        #grads[key] = np.clip(grads[key], -5, 5)
     return grads
     
 
