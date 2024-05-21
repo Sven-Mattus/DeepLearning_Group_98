@@ -21,12 +21,14 @@ if __name__ == "__main__":
 
     # train LSTM
     validation_set_len = BATCH_SIZE * SEQ_LENGTH * 2
-    NR_EPOCHS = 1
+    NR_EPOCHS = 10
+    print(lstm.generate_text(start_string=" ", data_converter=data_converter))
 
-    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[validation_set_len:int(0.25*len(book_as_ind))],
+    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[validation_set_len:],
                                                                        SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
     val_input, val_target = DataGenerator.create_array_dataset(book_as_ind[:validation_set_len],
                                                                SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
+
     history = lstm.train_network(dataset_input[len(dataset_input) % BATCH_SIZE:],
                                  dataset_target[len(dataset_target) % BATCH_SIZE:], NR_EPOCHS, BATCH_SIZE, val_input,
                                  val_target)

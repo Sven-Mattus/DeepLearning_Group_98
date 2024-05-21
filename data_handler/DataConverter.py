@@ -18,16 +18,13 @@ class DataConverter:
             ind[i] = int(self._char_to_ind[chars[i]])
         return ind
 
-    def ind_to_char(self, inds):
+    def ind_to_char(self, ind):
         """
-        converts a string into 1D array of indices
-        :param chars: string
+        converts an index into corresponding char
+        :param ind: string
         :return:    1D array of indices
         """
-        chars = ""
-        for i in range(len(chars)):
-            chars = chars + self._ind_to_char[inds[i]]
-        return chars
+        return self._ind_to_char[ind]
 
     def _generate_convert_dicts(self, book_chars):
         K = len(book_chars)

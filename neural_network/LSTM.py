@@ -26,13 +26,10 @@ class LSTM:
         return history
 
     def train_network_with_tf_dataset(self, dataset, nr_epochs, dataset_val):
-        # steps_per_epoch = (len(dataset) // batch_size) // seq_length
-        # validation_steps = (len(dataset_val) // batch_size) // seq_length  # if you have validation data
         history = self._model.fit(
             x=dataset,
             epochs=nr_epochs,
             validation_data=dataset_val,
-            # callbacks=[callback]
         )
         return history
 
@@ -61,12 +58,12 @@ class LSTM:
     def generate_text(self, start_string, data_converter: DataConverter, num_generate=1000, temperature=1.0):
         input_indices = data_converter.chars_to_ind(start_string)
         input_indices = tf.expand_dims(input_indices, 0)
-        text_generated = []
+        text_generated = ""
         # Here batch size == 1.
         for char_index in range(num_generate):
             predictions = self._model(input_indices)
             # remove the batch dimension
-            # predictions = tf.squeeze(predictions, 0)
+            predictions = tf.squeeze(predictions, 1)
             # Using a categorical distribution to predict the character returned by the model.
             predictions = predictions / temperature
             predicted_id = tf.random.categorical(
@@ -77,6 +74,7 @@ class LSTM:
             # We pass the predicted character as the next input to the model
             # along with the previous hidden state.
             input_indices = tf.expand_dims([predicted_id], 0)
-            text_generated.append(data_converter.ind_to_char(predicted_id))
+            charr = data_converter.ind_to_char(predicted_id)
+            text_generated += str(charr)
 
-        return (start_string + ''.join(text_generated))
+        return start_string + text_generated
