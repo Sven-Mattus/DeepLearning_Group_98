@@ -22,7 +22,6 @@ if __name__ == "__main__":
     # train LSTM
     validation_set_len = BATCH_SIZE * SEQ_LENGTH * 2
     NR_EPOCHS = 10
-    print(lstm.generate_text(start_string=" ", data_converter=data_converter))
 
     dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[validation_set_len:],
                                                                        SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
