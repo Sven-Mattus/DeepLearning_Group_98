@@ -15,6 +15,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
     e = 0
     hprev = np.zeros((m,1))
     epoch = 0
+    best_loss = 1000
     
     for i in range(nr_iterations):
         X_chars = book_data[e:e+seq_length]
@@ -27,29 +28,29 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
         
         smooth_loss = .999* smooth_loss + .001 * loss
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
-        grads_num = gradnum.compute_gradients_num(X, Y, RNN, hprev)
+        #grads_num = gradnum.compute_gradients_num(X, Y, RNN, hprev)
 
-        compare.compare_gradients_absolut(grads_num, grads)
-        compare.compare_gradients_relative(grads_num, grads)
+        #compare.compare_gradients_absolut(grads_num, grads)
+        #compare.compare_gradients_relative(grads_num, grads)
         
-        [RNN, Gradients] = AdaGradUpdateStep(RNN, grads, eta, Gradients)
+        RNN = AdaGradUpdateStep(RNN, grads, eta, Gradients)
         hprev = hs[:, hs.shape[1] - 1].reshape(-1, 1)
         smooth_losses.append(smooth_loss)
 
 
 
-        # if(i % 10000 == 0):
-        #     print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
-        #     synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
+        if(i % 10000 == 0 and i < 100000):
+            #print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
+            synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
 
-        #     #print(['iteration ', str(i), ': ', synthesized_data])
-        #     print('Synthesized Text:', end=' ')
-        #     for char in synthesized_data:
-        #         print(char[0], end='')
-        #     print('')
+            print(['Synthesized text at teration ', str(i), ': ', synthesized_data])
+            #print('Synthesized Text:', end=' ')
+            for char in synthesized_data:
+                print(char[0], end='')
+            print('')
         
-        if(i % 1000 == 0):
-            print('iteration: ', i, 'smooth_loss:', smooth_loss)
+        #if(i % 1000 == 0):
+            #print('iteration: ', i, 'smooth_loss:', smooth_loss)
 
         e = e+seq_length
         if e + seq_length > len(book_data):
@@ -57,6 +58,11 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
             hprev = np.zeros((m,1))
             epoch += 1
             print('epoch:', epoch, 'smooth_loss:', smooth_loss)
+
+        if smooth_loss < best_loss:
+            best_loss = smooth_loss
+            RNN.save_best_weights(RNN, best_loss)
+
         
     new_RNN = RNN
 
@@ -76,5 +82,5 @@ def AdaGradUpdateStep(RNN, grads, eta, G):
         # update = getattr(G, attribute) + getattr(grads, attribute) * getattr(grads, attribute)
         # setattr(G, attribute, update)
         # setattr(new_RNN, attribute, getattr(G, attribute) ) 
-    return new_RNN, G
+    return new_RNN
     

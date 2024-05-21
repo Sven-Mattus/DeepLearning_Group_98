@@ -5,6 +5,7 @@ from data_handler.DataLoader import DataLoader
 from neural_network.LSTM import LSTM
 from Translated_Matlab_Code.train_network_RNN import TrainNetwork
 from Translated_Matlab_Code.VanillaRNN_Class import VanillaRNN
+from evaluation.plot_loss import plot_loss
 
 if __name__ == "__main__":
     # load data
@@ -40,9 +41,11 @@ if __name__ == "__main__":
     sig = .01 # sigma for random distribution
     ETA = 0.1 #learning rate
     K = len(book_chars)
-    m = 5 # dimensionality of hidden state
+    m = 100 # dimensionality of hidden state
 
     RNN = VanillaRNN(sig, m, K)
 
-    TrainNetwork(book, 1, SEQ_LENGTH, RNN, ETA, data_converter)
+    RNN_trained, smooth_loss = TrainNetwork(book, 3000, SEQ_LENGTH, RNN, ETA, data_converter)
+
+    plot_loss(smooth_loss)
 
