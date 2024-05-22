@@ -8,6 +8,7 @@ from Translated_Matlab_Code.VanillaRNN_Class import VanillaRNN
 from Translated_Matlab_Code import forward_pass as fp
 from evaluation.plot_loss import plot_loss
 from evaluation.synthesize_text import synthesize_text, print_synthesized_text
+from evaluation.evaluate_loaded_weights import evaluate_loaded_weights
 
 if __name__ == "__main__":
     # load data
@@ -48,23 +49,9 @@ if __name__ == "__main__":
     RNN = VanillaRNN(sig, m, K)
     RNN_loaded = VanillaRNN(sig, m, K)
 
-    # RNN_trained, smooth_loss, smooth_loss_val = TrainNetwork(book, 300000, SEQ_LENGTH, RNN, ETA, data_converter)
+    #RNN_trained, smooth_loss, smooth_loss_val = TrainNetwork(book, 100001, SEQ_LENGTH, RNN, ETA, data_converter)
 
-    RNN_loaded = VanillaRNN.load_weights()
-    
-    loss_loaded_total = 0
-    # e = 133825
-    e = 0
-    for i in range(50):
-        e = e + SEQ_LENGTH * i
-        X_loaded = data_converter.one_hot_encode(data_converter.ind_to_chars(book_as_ind[e:e+SEQ_LENGTH]))
-        Y_loaded = data_converter.one_hot_encode(data_converter.ind_to_chars(book_as_ind[e+1:e+SEQ_LENGTH+1]))
-        loss_loaded, _, _, _= fp.ForwardPass(np.zeros((m,1)), RNN_loaded, X_loaded, Y_loaded)
-        loss_loaded_total += loss_loaded
-    loss_loaded = loss_loaded_total/50
-
-    text = synthesize_text(RNN_loaded, np.zeros((m,1)), ' ', 1000, data_converter)
-    print_synthesized_text(text)
+    evaluate_loaded_weights(SEQ_LENGTH, book_as_ind, data_converter, m)
 
     # print(loss_loaded/SEQ_LENGTH)
 

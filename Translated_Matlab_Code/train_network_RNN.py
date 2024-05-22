@@ -65,16 +65,16 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
         smooth_losses_val.append(smooth_loss_val)
 
         grads = gradRNN.compute_gradients_ana(hs, as_, Y, X, P, RNN)
-        #grads_num = gradnum.compute_gradients_num(X, Y, RNN, hprev)
+        # grads_num = gradnum.compute_gradients_num(X, Y, RNN, hprev)
 
-        #compare.compare_gradients_absolut(grads_num, grads)
-        #compare.compare_gradients_relative(grads_num, grads)
+        # compare.compare_gradients_absolut(grads_num, grads)
+        # compare.compare_gradients_relative(grads_num, grads)
         
         RNN = AdaGradUpdateStep(RNN, grads, eta, Gradients)
         hprev = hs[:, hs.shape[1] - 1].reshape(-1, 1)
         
 
-        if(i % 10000 == 0 and i < 100000):
+        if(i % 10000 == 0 and i < 100001):
             #print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
             synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
 
@@ -82,7 +82,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
             print(f'Synthesized Text at iteration {i}:')
             synthesize.print_synthesized_text(synthesized_data)
         
-        if(i % 1000 == 0):
+        if(i % 5000 == 0):
             print('iteration: ', i, 'smooth_loss:', smooth_loss, 'smooth_loss_val:', smooth_loss_val)
 
         e = e+seq_length
