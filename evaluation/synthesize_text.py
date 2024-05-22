@@ -26,3 +26,7 @@ def synthesize_text(RNN, h0, x0, n, data_converter):
         #Y[ii, t] = xt[:, 0]
         output_string.append(character)
     return output_string
+
+def print_synthesized_text(synthesized_text):
+    for char in synthesized_text:
+        print(char[0], end='')

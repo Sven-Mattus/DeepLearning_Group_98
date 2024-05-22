@@ -8,6 +8,20 @@ import evaluation.synthesize_text as synthesize
 
 
 def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter):
+    """
+    Trains a recurrent neural network (RNN) using the given book data.
+
+    Args:
+        book_data (list): The book data used for training the RNN.
+        nr_iterations (int): The number of iterations for training.
+        seq_length (int): The length of the input sequence.
+        RNN (object): The RNN object to be trained.
+        eta (float): The learning rate for the training.
+        data_converter (object): The data converter object used for encoding the input data.
+
+    Returns:
+        tuple: A tuple containing the trained RNN object, a list of smooth losses during training, and a list of smooth losses during validation.
+    """
     m = RNN.b.shape[0]
     K = RNN.c.shape[0]
     smooth_losses = []
@@ -66,9 +80,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
 
             #print(['Synthesized text at teration ', str(i), ': ', synthesized_data])
             print(f'Synthesized Text at iteration {i}:')
-            for char in synthesized_data:
-                print(char[0], end='')
-            print('')
+            synthesize.print_synthesized_text(synthesized_data)
         
         if(i % 1000 == 0):
             print('iteration: ', i, 'smooth_loss:', smooth_loss, 'smooth_loss_val:', smooth_loss_val)
