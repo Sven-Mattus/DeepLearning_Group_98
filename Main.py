@@ -5,6 +5,7 @@ from data_handler.DataLoader import DataLoader
 from neural_network.LSTM import LSTM
 from Translated_Matlab_Code.train_network_RNN import TrainNetwork
 from Translated_Matlab_Code.VanillaRNN_Class import VanillaRNN
+from Translated_Matlab_Code import forward_pass as fp
 from evaluation.plot_loss import plot_loss
 
 if __name__ == "__main__":
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     book_as_ind = data_converter.chars_to_ind(book)
 
     # chunk text into sequences
-    SEQ_LENGTH = 50
+    SEQ_LENGTH = 25
     nr_seqs_per_epochs = len(book_as_ind) // SEQ_LENGTH  # floor division
     sequences = data_converter.chunk_list(book_as_ind, SEQ_LENGTH)
     assert len(sequences) == nr_seqs_per_epochs
@@ -39,13 +40,28 @@ if __name__ == "__main__":
     #Train the RNN
     # convert the book chars back to ind
     sig = .01 # sigma for random distribution
-    ETA = 0.001 #learning rate
+    ETA = 0.01 #learning rate
     K = len(book_chars)
     m = 100 # dimensionality of hidden state
 
     RNN = VanillaRNN(sig, m, K)
+    RNN_loaded = VanillaRNN(sig, m, K)
 
-    RNN_trained, smooth_loss = TrainNetwork(book, 30000, SEQ_LENGTH, RNN, ETA, data_converter)
+    RNN_trained, smooth_loss, smooth_loss_val = TrainNetwork(book, 300000, SEQ_LENGTH, RNN, ETA, data_converter)
 
-    plot_loss(smooth_loss)
+    RNN_loaded = VanillaRNN.load_weights()
+    
+    # loss_loaded_total = 0
+    # e = 133825
+    # for i in range(50):
+    #     e = e + SEQ_LENGTH * i
+    #     X_loaded = data_converter.one_hot_encode(data_converter.ind_to_chars(book_as_ind[e:e+SEQ_LENGTH]))
+    #     Y_loaded = data_converter.one_hot_encode(data_converter.ind_to_chars(book_as_ind[e+1:e+SEQ_LENGTH+1]))
+    #     loss_loaded, _, _, _= fp.ForwardPass(np.zeros((m,1)), RNN_loaded, X_loaded, Y_loaded)
+    #     loss_loaded_total += loss_loaded
+    # loss_loaded = loss_loaded_total/50
+
+    # print(loss_loaded/SEQ_LENGTH)
+
+    plot_loss(smooth_loss, smooth_loss_val)
 
