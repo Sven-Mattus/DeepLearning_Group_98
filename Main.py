@@ -11,6 +11,22 @@ if __name__ == "__main__":
     data_converter = DataConverter(book_chars)
     book_as_ind = data_converter.chars_to_ind(book)
 
+
+    ### Enter here the script:
+    ### Set the parameters and add/remove the layer in the LSTM model accordingly 
+    ### as well as change the optimizer; GlorotNormal or GlorotUniform 
+    ### and the learning rate
+
+    
+    # set parameters and change the values in the function
+    layers = 1 # needs to be adjusted in the LSTM class!!!
+    optimizer= 'GN' # needs to be adjusted in the LSTM class!!!
+    learning_rate = 0.01 # needs to be adjusted in the LSTM class!!!
+    nr_rnn_units = 1024 # needs to be adjusted in the call of the LSTM instance!!!
+
+    # From here automatically updated when changed
+    temperature = 1.0 
+
     # generate dataset
     SEQ_LENGTH = 25
     BATCH_SIZE = 64
@@ -24,13 +40,7 @@ if __name__ == "__main__":
     test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 2
     NR_EPOCHS = 1
 
-    # filename
-    learning_rate = 0.01 # needs to be adjusted in the LSTM class!!!
-    layers = 1 # needs to be adjusted in the LSTM class!!!
-    optimizer= 'GN' # needs to be adjusted in the LSTM class!!!
-    temperature = 1.0 
-
-    filename = f'{layers}''_layer_'f'{NR_EPOCHS}''_epoch_'f'{BATCH_SIZE}''_batchsize_'f'{learning_rate}''_eta_'f'{optimizer}'f'_optimizer_'f'{temperature}'f'_temperature'
+    filename = f'{layers}''_layer_'f'{NR_EPOCHS}''_epoch_'f'{BATCH_SIZE}''_batchsize_'f'{learning_rate}''_eta_'f'{optimizer}'f'_optimizer_'f'{temperature}'f'_temperature_'f'{nr_rnn_units}'f'_hiddennodes'
 
     dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[test_set_len:int(0.05*len(book_as_ind))],
                                                                        SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
