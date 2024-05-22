@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # generate dataset
     SEQ_LENGTH = 25
-    BATCH_SIZE = 64
+    BATCH_SIZE = 1
 
     # initialize network
     K = len(book_chars)
