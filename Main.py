@@ -36,13 +36,13 @@ if __name__ == "__main__":
     lstm = LSTM(vocab_size=K, embedding_dim=256, nr_rnn_units=1024, batch_size=BATCH_SIZE)
 
     # train LSTM
-    validation_set_len = BATCH_SIZE * SEQ_LENGTH * 2
-    test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 2
-    NR_EPOCHS = 1
+    validation_set_len = BATCH_SIZE * SEQ_LENGTH * 20
+    test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 20
+    NR_EPOCHS = 10
 
-    filename = f'{layers}''_layer_'f'{NR_EPOCHS}''_epoch_'f'{BATCH_SIZE}''_batchsize_'f'{learning_rate}''_eta_'f'{optimizer}'f'_optimizer_'f'{temperature}'f'_temperature_'f'{nr_rnn_units}'f'_hiddennodes'
+    filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql'
 
-    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[test_set_len:int(0.05*len(book_as_ind))],
+    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[test_set_len:],
                                                                        SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
     val_input, val_target = DataGenerator.create_array_dataset(book_as_ind[:validation_set_len],
                                                                SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
