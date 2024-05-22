@@ -43,8 +43,8 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
             #print(['iter = ', str(i), ', loss = ', str(smooth_loss)])
             synthesized_data = synthesize.synthesize_text(RNN, hprev, X_chars[0], 200, data_converter)
 
-            print(['Synthesized text at teration ', str(i), ': ', synthesized_data])
-            #print('Synthesized Text:', end=' ')
+            #print(['Synthesized text at teration ', str(i), ': ', synthesized_data])
+            print(f'Synthesized Text at iteration {i}:')
             for char in synthesized_data:
                 print(char[0], end='')
             print('')
