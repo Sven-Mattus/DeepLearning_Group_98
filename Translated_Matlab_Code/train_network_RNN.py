@@ -61,7 +61,7 @@ def TrainNetwork(book_data, nr_iterations, seq_length, RNN,  eta, data_converter
 
         if smooth_loss < best_loss:
             best_loss = smooth_loss
-            RNN.save_best_weights(RNN, best_loss)
+            RNN.save_best_weights(best_loss)
 
         
     new_RNN = RNN

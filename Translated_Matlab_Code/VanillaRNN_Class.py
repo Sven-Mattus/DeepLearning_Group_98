@@ -9,7 +9,7 @@ class VanillaRNN:
         self.W = np.random.randn(m, m)*sig
         self.V = np.random.randn(K, m)*sig
 
-    def save_best_weights(self, loss, filename='../evaluation/best_weights.pkl'):
+    def save_best_weights(self, loss, filename='evaluation/best_weights.pkl'):
         with open(filename, 'wb') as f:
             pickle.dump({
                 'b': self.b,
@@ -18,7 +18,7 @@ class VanillaRNN:
                 'W': self.W,
                 'V': self.V
             }, f)
-        with open('../evaluation/loss.txt', 'wb') as f:
+        with open('evaluation/loss.txt', 'w') as f:
             f.write(str(loss))
 
 
