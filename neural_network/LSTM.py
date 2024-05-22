@@ -9,8 +9,9 @@ class LSTM:
         self._model = self._init_model(vocab_size, embedding_dim, nr_rnn_units)
         self._model.build(input_shape=(batch_size, None))
         self._model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-            loss=self._loss
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+            loss=self._loss,
+            metrics = ['accuracy']
         )
 
     def train_network(self, dataset_input, dataset_target, nr_epochs, batch_size, val_input, val_target):
@@ -48,14 +49,19 @@ class LSTM:
         model.add(tf.keras.layers.Dense(vocab_size))
         return model
 
-    def _loss(self, labels, logits):
+    def _loss(self, labels, logits, reduction='sum'):
+        #scce = tf.keras.losses.SparseCategoricalCrossentropy(reduction=tf.keras.losses.Reduction.NONE)
         return tf.keras.losses.sparse_categorical_crossentropy(
             y_true=labels,
             y_pred=logits,
-            from_logits=True
+            from_logits=True,
         )
+    
+    def evaluate(self, x, y, bs):
+        tl, acc = self._model.evaluate(x, y, bs)
+        return tl, acc
 
-    def generate_text(self, start_string, data_converter: DataConverter, num_generate=1000, temperature=1.0):
+    def generate_text(self, temperature, start_string, data_converter: DataConverter, num_generate=1000):
         input_indices = data_converter.chars_to_ind(start_string)
         input_indices = tf.expand_dims(input_indices, 0)
         text_generated = ""
