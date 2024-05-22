@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     RNN = VanillaRNN(sig, m, K)
 
-    RNN_trained, smooth_loss = TrainNetwork(book, 3000, SEQ_LENGTH, RNN, ETA, data_converter)
+    RNN_trained, smooth_loss = TrainNetwork(book, 30000, SEQ_LENGTH, RNN, ETA, data_converter)
 
     plot_loss(smooth_loss)
 
