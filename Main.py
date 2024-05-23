@@ -19,8 +19,8 @@ if __name__ == "__main__":
 
     
     # set parameters and change the values in the function
-    layers = 1 # needs to be adjusted in the LSTM class!!!
-    optimizer= 'GN' # needs to be adjusted in the LSTM class!!!
+    layers = 2 # needs to be adjusted in the LSTM class!!!
+    optimizer= 'GU' # needs to be adjusted in the LSTM class!!!
     learning_rate = 0.01 # needs to be adjusted in the LSTM class!!!
     nr_rnn_units = 1024 # needs to be adjusted in the call of the LSTM instance!!!
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # generate dataset
     SEQ_LENGTH = 25
-    BATCH_SIZE = 256
+    BATCH_SIZE = 64
 
     # initialize network
     K = len(book_chars)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # train LSTM
     validation_set_len = BATCH_SIZE * SEQ_LENGTH * 20
     test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 20
-    NR_EPOCHS = 1
+    NR_EPOCHS = 10
 
     filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql'
 
