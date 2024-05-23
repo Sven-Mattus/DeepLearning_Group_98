@@ -25,7 +25,7 @@ if __name__ == "__main__":
     nr_rnn_units = 1024 # needs to be adjusted in the call of the LSTM instance!!!
 
     # From here automatically updated when changed
-    temperature = 0.01
+    temperature = 1.5
 
     # generate dataset
     SEQ_LENGTH = 25
