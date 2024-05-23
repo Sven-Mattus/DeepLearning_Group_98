@@ -3,20 +3,23 @@ from data_handler.DataLoader import DataLoader
 from data_handler.DatasetGenerator import DataGenerator
 from evaluation.Evaluator import Evaluator
 from neural_network.LSTM import LSTM
+from data_handler import augmentation_tools
 
 
 if __name__ == "__main__":
     # load data
     book = DataLoader.load_data()
     # Get the augmented book
-    open_augmented = open("data/french_goblet_book.txt", "r")
-    augmented_book = open_augmented.read()
+    # open_augmented = open("data/french_goblet_book.txt", "r")
+    # augmented_book = open_augmented.read()
     # combine both books
-    combined_book = book + augmented_book
+    # combined_book = book + augmented_book
 
-    book_chars = sorted(set(combined_book))
-    data_converter = DataConverter(book_chars)
-    book_as_ind = data_converter.chars_to_ind(combined_book)
+    applied_augmentations = augmentation_tools.apply_augmentations(book)
+
+    # book_chars = sorted(set(combined_book))
+    # data_converter = DataConverter(book_chars)
+    # book_as_ind = data_converter.chars_to_ind(combined_book)
 
 
     ### Enter here the script:
