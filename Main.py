@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # generate dataset
     SEQ_LENGTH = 25
-    BATCH_SIZE = 1
+    BATCH_SIZE = 256
 
     # initialize network
     K = len(book_chars)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # train LSTM
     validation_set_len = BATCH_SIZE * SEQ_LENGTH * 20
     test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 20
-    NR_EPOCHS = 10
+    NR_EPOCHS = 1
 
     filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql'
 
@@ -52,6 +52,8 @@ if __name__ == "__main__":
     history = lstm.train_network(dataset_input[len(dataset_input) % BATCH_SIZE:],
                                  dataset_target[len(dataset_target) % BATCH_SIZE:], NR_EPOCHS, BATCH_SIZE, val_input,
                                  val_target)
+    
+    lstm.save_weights(filename)
     
     # Evaluate the model
     test_loss, accuracy = lstm.evaluate(x=test_input, y=test_target, bs= BATCH_SIZE)

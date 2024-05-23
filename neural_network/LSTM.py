@@ -84,3 +84,7 @@ class LSTM:
             text_generated += str(charr)
 
         return start_string + text_generated
+    
+    def save_weights(self, filename):
+        filepath = f'results/weights/{filename}.weights.h5'
+        self._model.save_weights(filepath)
