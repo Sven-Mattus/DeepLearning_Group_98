@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 from data_handler.DataConverter import DataConverter
 
@@ -67,15 +68,75 @@ class LSTM:
         text_generated = ""
         # Here batch size == 1.
         for char_index in range(num_generate):
+            #THIS PART IS OUR STANDARD SAMPLING STRATEGY
+            # predictions = self._model(input_indices)
+            # # remove the batch dimension
+            # predictions = tf.squeeze(predictions, 1)
+            # # Using a categorical distribution to predict the character returned by the model.
+            # predictions = predictions / temperature
+            # predicted_id = tf.random.categorical(
+            #     predictions,
+            #     num_samples=1
+            # )[-1, 0].numpy()
+
+            #IMPLEMENT NUCLEUOS SAMPLING HERE
+            #first, cap the sum of probabilites of the predictions
+            p_threshold = 0.75
+            batch_elements_indices = []
+            batch_elements_probabilites = []
+
             predictions = self._model(input_indices)
-            # remove the batch dimension
             predictions = tf.squeeze(predictions, 1)
-            # Using a categorical distribution to predict the character returned by the model.
-            predictions = predictions / temperature
+            #the predictions are our raw logits, hence we need to convert them to probabilites
+            predictions_probabilities = tf.nn.softmax(predictions)
+            prob_array = np.array(predictions_probabilities)
+            #prob_sum = np.sum(prob_array)
+
+            #iterate over the batch elements and get the minimum number of probabilites
+            for batch_element_i in range(predictions_probabilities.shape[0]):
+                batch_element = np.array(predictions_probabilities[batch_element_i])
+                probs_batch_element = np.array(prob_array[batch_element_i])
+                #returns indices that would sort the array in descending order
+                sorted_indices = np.flip(np.argsort(batch_element))
+
+                #get the indices that would just exceed the probabilities
+                p_set = 0
+                i = 0
+                indices_list = []
+                while p_set <= p_threshold:
+                    index = sorted_indices[i]
+                    p_set = p_set + batch_element[index]
+                    indices_list.append(index)
+                    i+=1
+
+                #check unlinkeli case that p_set = p_threshold
+                if p_set == p_threshold:
+                    index = sorted_indices[i]
+                    p_set = p_set + batch_element[index]
+                    indices_list.append(index)
+
+                batch_elements_indices.append(indices_list)
+                batch_elements_probabilites = [probs_batch_element[i] for i in batch_elements_indices]
+            V_min_set_indices = np.array(batch_elements_indices, dtype='object')
+            V_min_set_probabilites = np.array(batch_elements_probabilites, dtype='object')
+
+            #make independent copies of the tensor and array
+            nucleus_batch_predictions = tf.Tensor()
+            for batch_element_i in range(predictions_probabilities.shape[0]):
+                batch_predictions = predictions[batch_element_i]
+                for i in V_min_set_indices[batch_element_i]:
+                    nucleus_batch_predictions[batch_element_i][i]=batch_predictions[i]
+            nucleus_predictions = np.array(nucleus_batch_predictions, dtype='object')
+
             predicted_id = tf.random.categorical(
-                predictions,
+                nucleus_predictions,
                 num_samples=1
             )[-1, 0].numpy()
+            #sort all character predictions by likelyhood value
+
+            #sum all up until p_threshold is exceeded
+
+            #second, only sample among the reduced character set
 
             # We pass the predicted character as the next input to the model
             # along with the previous hidden state.
