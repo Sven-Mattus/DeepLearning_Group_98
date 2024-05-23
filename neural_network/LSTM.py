@@ -49,8 +49,7 @@ class LSTM:
         model.add(tf.keras.layers.Dense(vocab_size))
         return model
 
-    def _loss(self, labels, logits, reduction='sum'):
-        #scce = tf.keras.losses.SparseCategoricalCrossentropy(reduction=tf.keras.losses.Reduction.NONE)
+    def _loss(self, labels, logits):
         return tf.keras.losses.sparse_categorical_crossentropy(
             y_true=labels,
             y_pred=logits,
