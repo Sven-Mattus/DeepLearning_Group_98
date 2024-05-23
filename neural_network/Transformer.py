@@ -60,42 +60,40 @@ class MultiHeadSelfAttention(tf.keras.layers.Layer):
 
 
 class TransformerBlock(tf.keras.layers.Layer):
-    def __init__(self, d_model, num_heads, dff, rate=0.1):
+    def __init__(self, embedding_size, num_heads, dff, drop_out_rate=0.1):
         super(TransformerBlock, self).__init__()
-
-        self.mha = MultiHeadSelfAttention(d_model, num_heads)
+        self.mha = tf.keras.layers.MultiHeadAttention(num_heads=2, key_dim=embedding_size)
+        # self.mha = MultiHeadSelfAttention(embedding_size, num_heads)
         self.ffn = tf.keras.Sequential([
             tf.keras.layers.Dense(dff, activation='relu'),
-            tf.keras.layers.Dense(d_model)
+            tf.keras.layers.Dense(embedding_size)
         ])
 
         self.layernorm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
         self.layernorm2 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
+        self.add1 = tf.keras.layers.Add()
+        self.add2 = tf.keras.layers.Add()
 
-        self.dropout1 = tf.keras.layers.Dropout(rate)
-        self.dropout2 = tf.keras.layers.Dropout(rate)
+    def call(self, x, training):
 
-    def call(self, x, training, mask=None):
-        attn_output = self.mha(x, x, x, mask=mask, training=training)
-        attn_output = self.dropout1(attn_output, training=training)
-        out1 = self.layernorm1(x + attn_output)
-
-        ffn_output = self.ffn(out1)
-        ffn_output = self.dropout2(ffn_output, training=training)
-        out2 = self.layernorm2(out1 + ffn_output)
-
-        return out2
+        attn_output = self.mha(query=x, value=x, key=x, training=training, use_causal_mask=True)
+        x = self.add1([x, attn_output])
+        x = self.layernorm1(x)
+        mlp_output = self.ffn(x)
+        x = self.add2([x, mlp_output])
+        x = self.layernorm2(x)
+        return x
 
 
 class PositionEmbeddingLayer(tf.keras.layers.Layer):
-    def __init__(self, max_seq_len, d_model):
+    def __init__(self, max_seq_len, embedding_dim):
         super(PositionEmbeddingLayer, self).__init__()
-        self.pos_encoding = self.positional_encoding(max_seq_len, d_model)
+        self.pos_encoding = self.positional_encoding(max_seq_len, embedding_dim)
 
-    def positional_encoding(self, position, d_model):
+    def positional_encoding(self, position, embedding_size):
         angle_rads = self.get_angles(np.arange(position)[:, np.newaxis],
-                                     np.arange(d_model)[np.newaxis, :],
-                                     d_model)
+                                     np.arange(embedding_size)[np.newaxis, :],
+                                     embedding_size)
         angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
         angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
         pos_encoding = angle_rads[np.newaxis, ...]
@@ -107,39 +105,14 @@ class PositionEmbeddingLayer(tf.keras.layers.Layer):
 
     def call(self, x):
         seq_len = tf.shape(x)[1]
-        return x + self.pos_encoding[:, :seq_len, :]
-
-
-class TransformerModel(tf.keras.Model):
-    def __init__(self, vocab_size, num_layers, d_model, num_heads, dff, rate=0.1):
-        super(TransformerModel, self).__init__()
-        self.d_model = d_model
-        self.num_layers = num_layers
-
-        self.embedding = tf.keras.layers.Embedding(vocab_size, d_model)
-        self.pos_encoding = PositionEmbeddingLayer(vocab_size, d_model)
-
-        self.enc_layers = [TransformerBlock(d_model, num_heads, dff, rate)
-                           for _ in range(num_layers)]
-        self.dropout = tf.keras.layers.Dropout(rate)
-        self.final_layer = tf.keras.layers.Dense(vocab_size)
-
-    def call(self, x, training, mask=None):
-        seq_len = tf.shape(x)[1]
-        x = self.embedding(x)
-        x = self.pos_encoding(x)
-        for i in range(self.num_layers):
-            x = self.enc_layers[i](x, training=training, mask=mask)
-        x = self.dropout(x, training=training)
-        logits = self.final_layer(x)
-        return logits
+        return x + self.pos_encoding[:, :seq_len, :]  # pos encoding wird zeilenweise drauf addiert
 
 class Transformer:
-    def __init__(self, vocab_size, num_layers, d_model, num_heads, dff, batch_size, rate=0.1):
-        self._model = self._init_model(vocab_size, num_layers, d_model, num_heads, dff, rate)
+    def __init__(self, vocab_size, num_layers, embedding_dim, num_heads, dff, batch_size, learning_rate=0.01, rate=0.1):
+        self._model = self._init_model(vocab_size, num_layers, embedding_dim, num_heads, dff, rate)
         self._model.build(input_shape=(batch_size, None))
         self._model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
             loss=self._loss,
             metrics=['accuracy']
         )
@@ -151,8 +124,18 @@ class Transformer:
             from_logits=True,
         )
 
-    def _init_model(self, vocab_size, num_layers, d_model, num_heads, dff, rate):
-        return TransformerModel(vocab_size, num_layers, d_model, num_heads, dff, rate)
+    def _init_model(self, vocab_size, num_layers, embedding_dim, num_heads, dff, drop_out_rate):
+        model = tf.keras.models.Sequential()
+        model.add(tf.keras.layers.Embedding(
+            input_dim=vocab_size,
+            output_dim=embedding_dim,
+        ))
+        model.add(PositionEmbeddingLayer(vocab_size, embedding_dim))
+        for _ in range(num_layers):
+            model.add(TransformerBlock(embedding_dim, num_heads, dff, drop_out_rate))
+        # model.add(tf.keras.layers.Dropout(drop_out_rate))
+        model.add(tf.keras.layers.Dense(vocab_size))
+        return model
 
     def train_network_with_tf_dataset(self, dataset, nr_epochs, dataset_val):
         history = self._model.fit(

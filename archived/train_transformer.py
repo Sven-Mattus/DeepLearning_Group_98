@@ -4,7 +4,7 @@ from numpy import dtype
 
 from data_handler.DataConverter import DataConverter
 from data_handler.DataLoader import DataLoader
-from neural_network.Transformer_old import GPT
+from archived.Transformer_old import GPT
 
 batch_size = 12
 seq_length = 64
