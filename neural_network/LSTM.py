@@ -120,13 +120,36 @@ class LSTM:
             V_min_set_indices = np.array(batch_elements_indices, dtype='object')
             V_min_set_probabilites = np.array(batch_elements_probabilites, dtype='object')
 
-            #make independent copies of the tensor and array
-            nucleus_batch_predictions = tf.Tensor()
+            # #make independent copies of the tensor and array
+            # nucleus_batch_predictions = tf.Tensor()
+            # nucleus_predictions = tf.Tensor()
+            # for batch_element_i in range(predictions_probabilities.shape[0]):
+            #     batch_predictions = predictions[batch_element_i]
+            #     for i in V_min_set_indices[batch_element_i]:
+            #         nucleus_batch_predictions[i]=batch_predictions[i]
+            #     nucleus_predictions[batch_element_i] = nucleus_batch_predictions
+
+            # Initialize a TensorArray to collect nucleus_predictions
+            nucleus_predictions = tf.TensorArray(dtype=tf.float32, size=predictions_probabilities.shape[0])
+
+            # Iterate over batch elements
             for batch_element_i in range(predictions_probabilities.shape[0]):
                 batch_predictions = predictions[batch_element_i]
+                nucleus_batch_predictions = tf.zeros_like(batch_predictions)
+                
+                # Update nucleus_batch_predictions based on V_min_set_indices
                 for i in V_min_set_indices[batch_element_i]:
-                    nucleus_batch_predictions[batch_element_i][i]=batch_predictions[i]
-            nucleus_predictions = np.array(nucleus_batch_predictions, dtype='object')
+                    nucleus_batch_predictions = tf.tensor_scatter_nd_update(
+                        nucleus_batch_predictions,
+                        indices=[[i]],
+                        updates=[batch_predictions[i]]
+                    )
+                
+                # Write the updated predictions to the TensorArray
+                nucleus_predictions = nucleus_predictions.write(batch_element_i, nucleus_batch_predictions)
+
+            # Stack the TensorArray to get the final nucleus_predictions tensor
+            nucleus_predictions = nucleus_predictions.stack()
 
             predicted_id = tf.random.categorical(
                 nucleus_predictions,
