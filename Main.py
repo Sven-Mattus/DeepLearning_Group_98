@@ -8,11 +8,9 @@ from neural_network.LSTM import LSTM
 if __name__ == "__main__":
     # load data
     book = DataLoader.load_data()
-
     # Get the augmented book
     open_augmented = open("data/french_goblet_book.txt", "r")
     augmented_book = open_augmented.read()
-
     # combine both books
     combined_book = book + augmented_book
 
