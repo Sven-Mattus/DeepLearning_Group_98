@@ -1,2 +1,6 @@
 **/__pycache__/
 /.venv
+./__pycache__
+./neural_network/__pycache__
+./evaluation/__pycache__
+./data_handler/__pycache__
