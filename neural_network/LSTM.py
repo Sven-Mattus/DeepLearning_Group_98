@@ -81,7 +81,7 @@ class LSTM:
 
             #IMPLEMENT NUCLEUOS SAMPLING HERE
             #first, cap the sum of probabilites of the predictions
-            p_threshold = 0.75
+            p_threshold = 0.5
             batch_elements_indices = []
             batch_elements_probabilites = []
 

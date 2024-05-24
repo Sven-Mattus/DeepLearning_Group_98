@@ -38,9 +38,9 @@ if __name__ == "__main__":
     # train LSTM
     validation_set_len = BATCH_SIZE * SEQ_LENGTH * 20
     test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 20
-    NR_EPOCHS = 1
+    NR_EPOCHS = 10
 
-    filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql'
+    filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'_seql_05'
 
     dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[test_set_len:],
                                                                        SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
