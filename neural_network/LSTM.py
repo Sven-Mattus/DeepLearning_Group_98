@@ -81,7 +81,7 @@ class LSTM:
 
             #IMPLEMENT NUCLEUOS SAMPLING HERE
             #first, cap the sum of probabilites of the predictions
-            p_threshold = 0.5
+            p_threshold = 0.80
             batch_elements_indices = []
             batch_elements_probabilites = []
 
@@ -109,7 +109,7 @@ class LSTM:
                     indices_list.append(index)
                     i+=1
 
-                #check unlinkeli case that p_set = p_threshold
+                #check unlikely case that p_set = p_threshold
                 if p_set == p_threshold:
                     index = sorted_indices[i]
                     p_set = p_set + batch_element[index]
