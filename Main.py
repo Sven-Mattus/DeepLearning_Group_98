@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     # set parameters
     layers = 1
-    optimizer = Initializer.GN
+    optimizer = Initializer.GN.value
     learning_rate = 0.01
     nr_rnn_units = 1024
     temperature = 1.0
