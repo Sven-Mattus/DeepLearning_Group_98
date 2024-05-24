@@ -6,11 +6,11 @@ from data_handler.DataConverter import DataConverter
 
 class LSTM:
 
-    def __init__(self, vocab_size, embedding_dim, nr_rnn_units, batch_size):
-        self._model = self._init_model(vocab_size, embedding_dim, nr_rnn_units)
+    def __init__(self, vocab_size, embedding_dim, nr_rnn_units, batch_size, nr_layers, learning_rate, initializer):
+        self._model = self._init_model(vocab_size, embedding_dim, nr_rnn_units, nr_layers, initializer)
         self._model.build(input_shape=(batch_size, None))
         self._model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
             loss=self._loss,
             metrics = ['accuracy']
         )
@@ -35,18 +35,19 @@ class LSTM:
         )
         return history
 
-    def _init_model(self, vocab_size, embedding_dim, nr_rnn_units):
+    def _init_model(self, vocab_size, embedding_dim, nr_rnn_units, nr_layers, initializer):
         model = tf.keras.models.Sequential()
         model.add(tf.keras.layers.Embedding(
             input_dim=vocab_size,
             output_dim=embedding_dim,
         ))
-        model.add(tf.keras.layers.LSTM(
-            units=nr_rnn_units,
-            return_sequences=True,
-            stateful=True,
-            recurrent_initializer=tf.keras.initializers.GlorotNormal()
-        ))
+        for i in range(nr_layers):
+            model.add(tf.keras.layers.LSTM(
+                units=nr_rnn_units,
+                return_sequences=True,
+                stateful=True,
+                recurrent_initializer=initializer
+            ))
         model.add(tf.keras.layers.Dense(vocab_size))
         return model
 

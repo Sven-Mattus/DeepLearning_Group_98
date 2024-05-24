@@ -1,3 +1,4 @@
+from Initializer import Initializer
 from data_handler.DataConverter import DataConverter
 from data_handler.DataLoader import DataLoader
 from data_handler.DatasetGenerator import DataGenerator
@@ -18,11 +19,11 @@ if __name__ == "__main__":
     ### and the learning rate
 
     
-    # set parameters and change the values in the function
-    layers = 1 # needs to be adjusted in the LSTM class!!!
-    optimizer= 'GN' # needs to be adjusted in the LSTM class!!!
-    learning_rate = 0.01 # needs to be adjusted in the LSTM class!!!
-    nr_rnn_units = 1024 # needs to be adjusted in the call of the LSTM instance!!!
+    # set parameters
+    layers = 1
+    optimizer= Initializer.GN
+    learning_rate = 0.01
+    nr_rnn_units = 1024
 
     # From here automatically updated when changed
     temperature = 1.0 
@@ -33,7 +34,7 @@ if __name__ == "__main__":
 
     # initialize network
     K = len(book_chars)
-    lstm = LSTM(vocab_size=K, embedding_dim=256, nr_rnn_units=1024, batch_size=BATCH_SIZE)
+    lstm = LSTM(vocab_size=K, embedding_dim=256, nr_rnn_units=nr_rnn_units, batch_size=BATCH_SIZE, nr_layers=layers, learning_rate=learning_rate, initializer=optimizer)
 
     # train LSTM
     validation_set_len = BATCH_SIZE * SEQ_LENGTH * 20
