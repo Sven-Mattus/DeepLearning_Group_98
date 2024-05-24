@@ -1,5 +1,4 @@
 import numpy as np
-import tensorflow as tf
 
 from data_handler.DataConverter import DataConverter
 from data_handler.DataLoader import DataLoader
@@ -7,7 +6,7 @@ from data_handler.DatasetGenerator import DataGenerator
 from neural_network.Transformer import Transformer
 
 text = DataLoader.load_data()
-text = text[:int(0.05 * len(text))]
+text = text[:int(0.5 * len(text))]
 vocab = sorted(set(text))
 vocab_size = len(vocab)
 data_converter = DataConverter(vocab)
@@ -27,7 +26,7 @@ num_layers = 4
 embedding_dim = 256
 num_heads = 8
 dff = 512
-dropout_rate = 0.0
+dropout_rate = 0.01
 
 transformer = Transformer(vocab_size, num_layers, embedding_dim, num_heads, dff, dropout_rate)
 

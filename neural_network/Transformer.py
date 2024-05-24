@@ -133,7 +133,7 @@ class Transformer:
         model.add(PositionEmbeddingLayer(vocab_size, embedding_dim))
         for _ in range(num_layers):
             model.add(TransformerBlock(embedding_dim, num_heads, dff, drop_out_rate))
-        # model.add(tf.keras.layers.Dropout(drop_out_rate))
+        model.add(tf.keras.layers.Dropout(drop_out_rate))
         model.add(tf.keras.layers.Dense(vocab_size))
         return model
 
