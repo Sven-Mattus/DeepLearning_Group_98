@@ -8,18 +8,19 @@ from data_handler import augmentation_tools
 
 if __name__ == "__main__":
     # load data
-    book = DataLoader.load_data()
+    book_data = DataLoader.load_data()
     # Get the augmented book
     # open_augmented = open("data/french_goblet_book.txt", "r")
     # augmented_book = open_augmented.read()
     # combine both books
     # combined_book = book + augmented_book
 
-    applied_augmentations = augmentation_tools.apply_augmentations(book)
+    applied_augmentations = augmentation_tools.apply_augmentations(book_data)
+    book_augmented = book_data + applied_augmentations
 
-    # book_chars = sorted(set(combined_book))
-    # data_converter = DataConverter(book_chars)
-    # book_as_ind = data_converter.chars_to_ind(combined_book)
+    book_chars = sorted(set(book_augmented))
+    data_converter = DataConverter(book_chars)
+    book_as_ind = data_converter.chars_to_ind(book_augmented)
 
 
     ### Enter here the script:
@@ -46,21 +47,28 @@ if __name__ == "__main__":
     lstm = LSTM(vocab_size=K, embedding_dim=256, nr_rnn_units=1024, batch_size=BATCH_SIZE)
 
     # train LSTM
-    validation_set_len = BATCH_SIZE * SEQ_LENGTH * 20
-    test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 20
+    validation_set_len = len(book_data) * 0.15
+    test_set_len = validation_set_len
     NR_EPOCHS = 1
 
     filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql'
 
-    dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[test_set_len:],
-                                                                       SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
-    val_input, val_target = DataGenerator.create_array_dataset(book_as_ind[:validation_set_len],
-                                                               SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
-    test_input, test_target = DataGenerator.create_array_dataset(book_as_ind[validation_set_len:test_set_len],
-                                                            SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
+    val_input, val_target = DataGenerator.create_array_dataset(
+        book_as_ind[:validation_set_len],
+        seq_length=SEQ_LENGTH
+        )
+    test_input, test_target = DataGenerator.create_array_dataset(
+        book_as_ind[validation_set_len:validation_set_len+test_set_len],
+        seq_length=SEQ_LENGTH
+    )
+    train_input, train_target = DataGenerator.create_array_dataset(
+        book_as_ind[validation_set_len+test_set_len:],
+        seq_length=SEQ_LENGTH
+    )
 
-    history = lstm.train_network(dataset_input[len(dataset_input) % BATCH_SIZE:],
-                                 dataset_target[len(dataset_target) % BATCH_SIZE:], NR_EPOCHS, BATCH_SIZE, val_input,
+    
+    history = lstm.train_network(train_input[len(train_input) % BATCH_SIZE:],
+                                 train_target[len(train_target) % BATCH_SIZE:], NR_EPOCHS, BATCH_SIZE, val_input,
                                  val_target)
     
     lstm.save_weights(filename)

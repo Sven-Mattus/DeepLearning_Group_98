@@ -24,13 +24,8 @@ def apply_augmentations(book_text):
     config = load_config()
 
     sentences = text_to_sentences(book_text)
-    text_synonym = ''
-    text_insertion = ''
-    text_swap = ''
-    text_deletion = ''
-    book_shuffled = ''
-    book_unique = ''
-
+    text_synonym, text_deletion, text_insertion, text_swap, text_deletion, book_shuffled, book_unique = '', '', '', '', '', '', ''
+    
     for sentence in sentences:
         if config['augmentations']['synonym_replacement']['enabled']:
             augmented_text = synonym_replacement(sentence, config['augmentations']['synonym_replacement']['changed_words'])
