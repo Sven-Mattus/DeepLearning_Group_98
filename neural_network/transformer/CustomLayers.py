@@ -59,7 +59,7 @@ class EncodeAndDecodeBlock(layers.Layer):
         out_enc = self.lay_norm_2(x)
 
         # decode
-        z = input  # [:,1:,:] todo is not the same as output
+        z = tf.pad(input[:, :-1, :], [[0, 0], [1, 0], [0, 0]])# [:,1:,:] todo is not the same as output
         q = self.lay_query(z)
         k = self.lay_key(z)
         v = self.lay_value(z)
