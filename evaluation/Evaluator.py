@@ -16,7 +16,7 @@ class Evaluator:
         plt.plot(loss_val, label='Validation set')
         plt.legend()
         plt.grid(linestyle='--', linewidth=1, alpha=0.5)
-        plt.savefig('results/plots/'f'{filename}''.png')
+        plt.savefig('NewResults/plots/'f'{filename}''.png')
         plt.show()
 
 
