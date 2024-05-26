@@ -5,13 +5,12 @@ import tensorflow as tf
 class DataGenerator:
 
     @staticmethod
-    def create_tf_dataset(book_as_ind, seq_length):
+    def create_tf_dataset(book_as_ind, seq_length, batch_size):
         char_dataset = tf.data.Dataset.from_tensor_slices(book_as_ind)
         sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
         dataset = sequences.map(DataGenerator._split_input_target)
-        BATCH_SIZE = 64
-        BUFFER_SIZE = 10000
-        dataset = dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE, drop_remainder=True)
+        BUFFER_SIZE = len(list(dataset))
+        dataset = dataset.shuffle(BUFFER_SIZE).batch(batch_size=batch_size, drop_remainder=True).repeat()
         return dataset
 
     @staticmethod

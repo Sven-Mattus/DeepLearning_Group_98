@@ -39,6 +39,8 @@ class CausalSelfAttention(layers.Layer):
         self.lay_query = layers.Dense(units=embedding_dim, use_bias=False)
         # output projection
         self.lay_proj = layers.Dense(units=embedding_dim, use_bias=False)
+        key_dim = embedding_dim // nr_heads
+        self.lay_multihead_att = layers.MultiHeadAttention(num_heads=nr_heads, key_dim=key_dim, dropout=dropout_rate, use_bias=False)
 
     def call_old(self, x):
         batch_size, seq_length, embedding_dim = x.shape
@@ -78,26 +80,17 @@ class CausalSelfAttention(layers.Layer):
         return y
 
     def call(self, x):
-        # single head!!!
         batch_size, seq_length, embedding_dim = x.shape
         q = self.lay_query(x)
         k = self.lay_key(x)
         v = self.lay_value(x)
+        x = self.lay_multihead_att(query=q, key=k, value=v, use_causal_mask=True)
 
-        x = tf.matmul(q, k, transpose_b=True)
-
-        x = tf.nn.softmax(x, axis=-1)
-
-        x = tf.matmul(x, v)
-
-        # att = q @ tf.transpose(k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
-        # att = tf.matmul(q, k, transpose_b=True) * (1.0 / math.sqrt(embedding_dim // self.nr_heads))
-        # mask = tf.linalg.band_part(tf.ones((seq_length, seq_length)), -1, 0)  # Lower triangular matrix
-        # mask = tf.reshape(mask,
-        #                   (1, 1, seq_length, seq_length))  # Shape to (1, 1, seq_length, seq_length) for broadcasting
-        #
-        # # Apply mask to attention logits
-        # att = att * mask + (1.0 - mask) * float('-inf')
+        # single head
+        # att = tf.matmul(q, k, transpose_b=True)
+        # att = tf.nn.softmax(att, axis=-1)
+        # masked_att =
+        # x = tf.matmul(att, v)
 
         return x
 
@@ -121,5 +114,4 @@ class MLP(layers.Layer):
         return x
 
     def build(self, input_shape):
-        # Ensure to call the build method of the super class
         super(MLP, self).build(input_shape)
