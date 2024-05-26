@@ -61,8 +61,32 @@ class LSTM:
     def evaluate(self, x, y, bs):
         tl, acc = self._model.evaluate(x, y, bs)
         return tl, acc
-
+    
     def generate_text(self, temperature, start_string, data_converter: DataConverter, num_generate=1000):
+        input_indices = data_converter.chars_to_ind(start_string)
+        input_indices = tf.expand_dims(input_indices, 0)
+        text_generated = ""
+        # Here batch size == 1.
+        for char_index in range(num_generate):
+            predictions = self._model(input_indices)
+            # remove the batch dimension
+            predictions = tf.squeeze(predictions, 1)
+            # Using a categorical distribution to predict the character returned by the model.
+            predictions = predictions / temperature
+            predicted_id = tf.random.categorical(
+                predictions,
+                num_samples=1
+            )[-1, 0].np()
+
+            # We pass the predicted character as the next input to the model
+            # along with the previous hidden state.
+            input_indices = tf.expand_dims([predicted_id], 0)
+            charr = data_converter.ind_to_char(predicted_id)
+            text_generated += str(charr)
+
+        return start_string + text_generated
+
+    def generate_text_nucleus(self, temperature, start_string, data_converter: DataConverter, num_generate=1000):
         input_indices = data_converter.chars_to_ind(start_string)
         input_indices = tf.expand_dims(input_indices, 0)
         text_generated = ""
@@ -170,5 +194,5 @@ class LSTM:
         return start_string + text_generated
 
     def save_weights(self, filename):
-        filepath = f'results/weights/{filename}.weights.h5'
+        filepath = f'Newresults/weights/{filename}.weights.h5'
         self._model.save_weights(filepath)

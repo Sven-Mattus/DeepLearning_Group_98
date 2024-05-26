@@ -38,7 +38,7 @@ if __name__ == "__main__":
     test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 20
     NR_EPOCHS = 10
 
-    filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql''_p0.8'
+    filename = f'{layers}''_lay_'f'{NR_EPOCHS}''_epo_'f'{BATCH_SIZE}''_batchs_'f'{learning_rate}''_eta_'f'{optimizer}'f'_opti_'f'{temperature}'f'_temp_'f'{nr_rnn_units}'f'_units_'f'{SEQ_LENGTH}'f'seql'
 
     dataset_input, dataset_target = DataGenerator.create_array_dataset(book_as_ind[test_set_len:],
                                                                        SEQ_LENGTH)  # arrays of size nr_seq x SEQ_LENGTH-1
@@ -55,13 +55,16 @@ if __name__ == "__main__":
 
     # Evaluate the model
     test_loss, accuracy = lstm.evaluate(x=test_input, y=test_target, bs=BATCH_SIZE)
+
+    # Generate text
+    gen_text_nucleus = lstm.generate_text_nucleus(temperature, start_string=" ", data_converter=data_converter)
     gen_text = lstm.generate_text(temperature, start_string=" ", data_converter=data_converter)
 
-    print("Test loss:", test_loss, '\n', "Accuracy:", accuracy, '\n', gen_text)
+    print("Test loss:", test_loss, '\n', "Accuracy:", accuracy, '\n', "Generated text:", gen_text, '\n')
 
-    with open('results/'f'{filename}''.txt', 'a') as f:
+    with open('Newresults/'f'{filename}''.txt', 'a') as f:
         # Append the loss value followed by a newline character
         f.write(f'{filename}' + '\n' + "Test loss:" + str(test_loss) + '\n' + "Accuracy:" + str(
-            accuracy) + '\n' + "Generated Text:" + str(gen_text) + '\n')
+            accuracy) + '\n' + "Generated Text:" + str(gen_text) + '\n', + "Generated Text with nucleus sampling:" + str(gen_text_nucleus) + '\n')
 
     Evaluator.plot_history_loss(history, filename)
