@@ -19,6 +19,26 @@ def load_config():
         config = json.load(file)
     return config
 
+def generate_filename():
+    """Generates a filename based on the configuration provided."""
+    config = load_config()
+    parts = []
+    if config['augmentations']['synonym_replacement']['enabled']:
+        parts.append(f"SR{config['augmentations']['synonym_replacement']['changed_words']}")
+    if config['augmentations']['random_insertion']['enabled']:
+        parts.append(f"RI{config['augmentations']['random_insertion']['inserted_words']}")
+    if config['augmentations']['random_swap']['enabled']:
+        parts.append(f"RS{config['augmentations']['random_swap']['amount_swaps']}")
+    if config['augmentations']['random_deletion']['enabled']:
+        parts.append(f"RD{config['augmentations']['random_deletion']['deletion_probability']:.1f}")
+    if config['augmentations']['shuffle_sentences']['enabled']:
+        parts.append("SS")
+    if config['augmentations']['exclude_duplicates']['enabled']:
+        parts.append("ED")
+    
+    filename = "_".join(parts)
+    return filename
+
 def apply_augmentations(book_text):
     """Applies text augmentations based on the configuration provided."""
     config = load_config()
@@ -77,9 +97,13 @@ def random_insertion(sentence, n):
     words = word_tokenize(sentence)
     for _ in range(n):
         synonyms = []
+        i = 0
         while not synonyms:
             word = random.choice(words)
             synonyms = get_synonyms(word)
+            i += 1
+            if i > 1000:
+                return ' '.join(words)
         synonym = random.choice(synonyms)
         position = random.randint(0, len(words))
         words.insert(position, synonym)
@@ -88,9 +112,11 @@ def random_insertion(sentence, n):
 def random_swap(sentence, n):
     words = word_tokenize(sentence)
     length = len(words)
-    for _ in range(n):
-        idx1, idx2 = random.sample(range(length), 2)
-        words[idx1], words[idx2] = words[idx2], words[idx1]
+    if length > n - 1:
+        for _ in range(n):
+            idx1, idx2 = random.sample(range(length), 2)
+            words[idx1], words[idx2] = words[idx2], words[idx1]
+
     return ' '.join(words)
 
 def random_deletion(sentence, p):

@@ -1,16 +1,16 @@
 {
     "augmentations": {
         "synonym_replacement":{
-            "enabled": true,
-            "changed_words": 2
+            "enabled": false,
+            "changed_words": 4
         },
         "random_insertion":{
-            "enabled": false,
-            "inserted_words": 2
+            "enabled": true,
+            "inserted_words": 3
         },
         "random_swap":{
             "enabled": false,
-            "amount_swaps": 2
+            "amount_swaps": 3
         },
         "random_deletion":{
             "enabled": false,
