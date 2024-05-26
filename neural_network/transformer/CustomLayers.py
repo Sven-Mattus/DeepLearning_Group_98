@@ -23,6 +23,61 @@ class Block(layers.Layer):
         x = self.lay_norm_2(x)
         return x
 
+class EncodeAndDecodeBlock(layers.Layer):
+
+    def __init__(self, dropout_rate, nr_heads, embedding_dim):
+        super().__init__()
+        self.attn = CausalSelfAttention(dropout_rate, nr_heads, embedding_dim)
+        self.lay_norm_1 = layers.LayerNormalization()
+        self.mlp_enc = MLP(embedding_dim, dropout_rate)
+        self.mlp_dec = MLP(embedding_dim, dropout_rate)
+        self.lay_norm_2 = layers.LayerNormalization()
+        self.lay_norm_3 = layers.LayerNormalization()
+        self.lay_norm_4 = layers.LayerNormalization()
+        self.lay_norm_5 = layers.LayerNormalization()
+        self.lay_key = layers.Dense(units=embedding_dim, use_bias=False)
+        self.lay_value = layers.Dense(units=embedding_dim, use_bias=False)
+        self.lay_query = layers.Dense(units=embedding_dim, use_bias=False)
+        key_dim = embedding_dim // nr_heads
+        self.lay_multihead_att_enc = layers.MultiHeadAttention(num_heads=nr_heads, key_dim=key_dim, dropout=dropout_rate, use_bias=False)
+        self.lay_multihead_att_dec = layers.MultiHeadAttention(num_heads=nr_heads, key_dim=key_dim, dropout=dropout_rate, use_bias=False)
+        self.lay_multihead_att_cross = layers.MultiHeadAttention(num_heads=nr_heads, key_dim=key_dim, dropout=dropout_rate, use_bias=False)
+
+    def build(self, input_shape):
+        super(EncodeAndDecodeBlock, self).build(input_shape)
+
+    def call(self, input):
+        x = input  # [:,0:input.shape[1]-1, :]
+        # encode
+        q = self.lay_query(x)
+        k = self.lay_key(x)
+        v = self.lay_value(x)
+        att = self.lay_multihead_att_enc(query=q, key=k, value=v, use_causal_mask=True)
+        x = x + att
+        x = self.lay_norm_1(x)
+        x = x + self.mlp_enc(x)
+        out_enc = self.lay_norm_2(x)
+
+        # decode
+        z = input  # [:,1:,:] todo is not the same as output
+        q = self.lay_query(z)
+        k = self.lay_key(z)
+        v = self.lay_value(z)
+        att = self.lay_multihead_att_dec(query=q, key=k, value=v, use_causal_mask=True)
+        x = out_enc + att
+        x = self.lay_norm_3(x)
+
+        # Cross-attention with encoder output
+        q = self.lay_query(x)
+        k = self.lay_key(out_enc)
+        v = self.lay_value(out_enc)
+        att = self.lay_multihead_att_cross(query=q, key=k, value=v, use_causal_mask=False)
+        x = x + att
+        x = self.lay_norm_4(x)
+        x = x + self.mlp_dec(x)
+        x = self.lay_norm_5(x)
+        return x
+
 
 class CausalSelfAttention(layers.Layer):
 

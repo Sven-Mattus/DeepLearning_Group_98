@@ -2,7 +2,7 @@
 import tensorflow as tf
 from keras.src import layers
 
-from neural_network.transformer.CustomLayers import Block
+from neural_network.transformer.CustomLayers import Block, EncodeAndDecodeBlock
 
 
 class CustomTransformerModel(tf.keras.Model):
@@ -12,7 +12,7 @@ class CustomTransformerModel(tf.keras.Model):
         self.lay_input_embed = layers.Embedding(input_dim=vocab_size, output_dim=embedding_dim)
         self.lay_pos_embed = layers.Embedding(input_dim=seq_length, output_dim=embedding_dim)
         self.lay_dropout = layers.Dropout(rate=drop_out_rate)
-        self.lays_transf_block = [Block(dropout_rate=drop_out_rate, nr_heads=nr_heads, embedding_dim=embedding_dim) for _ in range(nr_layers)]
+        self.lays_transf_block = [EncodeAndDecodeBlock(dropout_rate=drop_out_rate, nr_heads=nr_heads, embedding_dim=embedding_dim) for _ in range(nr_layers)]
         self.lay_norm = layers.LayerNormalization()
         self.lm_head = layers.Dense(units=vocab_size, use_bias=False)  # initializer is glorot uniform; units is output_dim
 

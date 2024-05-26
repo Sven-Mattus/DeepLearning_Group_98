@@ -10,16 +10,16 @@ class DataGenerator:
         sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
         dataset = sequences.map(DataGenerator._split_input_target)
         BUFFER_SIZE = len(list(dataset))
-        dataset = dataset.shuffle(BUFFER_SIZE).batch(batch_size=batch_size, drop_remainder=True).repeat()
+        dataset = dataset.batch(batch_size=batch_size, drop_remainder=True)
         return dataset
 
     @staticmethod
     def create_array_dataset(book_as_ind, seq_length):
-        nr_seqs_per_epochs = len(book_as_ind) // seq_length  # floor division
-        sequences = DataGenerator._chunk_list(book_as_ind, seq_length)
+        nr_seqs_per_epochs = len(book_as_ind) // (seq_length+1)  # floor division
+        sequences = DataGenerator._chunk_list(book_as_ind, seq_length+1)
         assert len(sequences) == nr_seqs_per_epochs
         data_block = np.vstack(sequences)
-        dataset_input = data_block[:, :seq_length - 1]
+        dataset_input = data_block[:, :seq_length]
         dataset_target = data_block[:, 1:]
         # np.random.shuffle(sequences)  # shuffle
         return dataset_input, dataset_target

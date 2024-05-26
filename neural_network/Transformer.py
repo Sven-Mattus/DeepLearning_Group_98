@@ -26,6 +26,17 @@ class Transformer:
         return CustomTransformerModel(seq_length=seq_length, vocab_size=vocab_size, embedding_dim=embedding_dim,
                                       drop_out_rate=drop_out_rate, nr_layers=num_layers, nr_heads=num_heads)
 
+    def train_network(self, dataset_input, dataset_target, nr_epochs, batch_size, val_input, val_target):
+        history = self._model.fit(
+            x=dataset_input,
+            y=dataset_target,
+            epochs=nr_epochs,
+            batch_size=batch_size,
+            # We pass some validation for monitoring validation loss and metrics at the end of each epoch
+            validation_data=(val_input, val_target),
+        )
+        return history
+
     def train_network_with_tf_dataset(self, dataset, nr_epochs, dataset_val):
         history = self._model.fit(
             x=dataset,
