@@ -18,15 +18,15 @@ if __name__ == "__main__":
     ### and the learning rate
 
     # set parameters
-    layers = 1
-    optimizer = Initializer.GN.value
-    learning_rate = 0.01
-    nr_rnn_units = 1024
-    temperature = 1.0
+    layers = 2                          # default = 1
+    optimizer = Initializer.GN.value    # default = GN
+    learning_rate = 0.01                # default = 0.01
+    nr_rnn_units = 1024                 # default = 1024
+    temperature = 1.0                   # default = 1.0
 
     # generate dataset
-    SEQ_LENGTH = 25
-    BATCH_SIZE = 64
+    SEQ_LENGTH = 25                     # default = 25
+    BATCH_SIZE = 64                     # default = 64
 
     # initialize network
     K = len(book_chars)
