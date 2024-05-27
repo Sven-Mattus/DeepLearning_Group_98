@@ -52,7 +52,7 @@ class EncodeAndDecodeBlock(layers.Layer):
         q = self.lay_query(x)
         k = self.lay_key(x)
         v = self.lay_value(x)
-        att = self.lay_multihead_att_enc(query=q, key=k, value=v, use_causal_mask=True)
+        att = self.lay_multihead_att_enc(query=x, key=x, value=x, use_causal_mask=True)
         x = x + att
         x = self.lay_norm_1(x)
         x = x + self.mlp_enc(x)
@@ -63,7 +63,7 @@ class EncodeAndDecodeBlock(layers.Layer):
         q = self.lay_query(z)
         k = self.lay_key(z)
         v = self.lay_value(z)
-        att = self.lay_multihead_att_dec(query=q, key=k, value=v, use_causal_mask=True)
+        att = self.lay_multihead_att_dec(query=z, key=z, value=z, use_causal_mask=True)
         x = out_enc + att
         x = self.lay_norm_3(x)
 
@@ -71,7 +71,7 @@ class EncodeAndDecodeBlock(layers.Layer):
         q = self.lay_query(x)
         k = self.lay_key(out_enc)
         v = self.lay_value(out_enc)
-        att = self.lay_multihead_att_cross(query=q, key=k, value=v, use_causal_mask=False)
+        att = self.lay_multihead_att_cross(query=x, key=out_enc, value=out_enc, use_causal_mask=True)
         x = x + att
         x = self.lay_norm_4(x)
         x = x + self.mlp_dec(x)
@@ -136,10 +136,10 @@ class CausalSelfAttention(layers.Layer):
 
     def call(self, x):
         batch_size, seq_length, embedding_dim = x.shape
-        q = self.lay_query(x)
-        k = self.lay_key(x)
-        v = self.lay_value(x)
-        x = self.lay_multihead_att(query=q, key=k, value=v, use_causal_mask=True)
+        # q = self.lay_query(x)
+        # k = self.lay_key(x)
+        # v = self.lay_value(x)
+        x = self.lay_multihead_att(query=x, key=x, value=x, use_causal_mask=True)
 
         # single head
         # att = tf.matmul(q, k, transpose_b=True)

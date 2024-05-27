@@ -32,8 +32,8 @@ num_heads = 1
 embedding_dim = 256 * num_heads
 dropout_rate = 0.001
 learning_rate = 0.001
-temperature = 0.8
-nr_epochs = 2
+temperature = 1.0
+nr_epochs = 10
 
 transformer = Transformer(vocab_size=vocab_size, num_layers=num_layers, embedding_dim=embedding_dim,
                           num_heads=num_heads, batch_size=BATCH_SIZE, learning_rate=learning_rate,
