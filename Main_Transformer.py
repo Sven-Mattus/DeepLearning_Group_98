@@ -16,8 +16,8 @@ book_as_ind = np.array(data_converter.chars_to_ind(text))
 # Create training examples / targets
 SEQ_LENGTH = 80
 BATCH_SIZE = 100
-validation_set_len = BATCH_SIZE * SEQ_LENGTH * 1
-test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 1
+validation_set_len = BATCH_SIZE * SEQ_LENGTH * 5
+test_set_len = validation_set_len + BATCH_SIZE * SEQ_LENGTH * 5
 examples_per_epoch = len(text) // (SEQ_LENGTH + 1)
 
 # dataset = DataGenerator.create_tf_dataset(book_as_ind[validation_set_len: len(book_as_ind)], seq_length=SEQ_LENGTH, batch_size=BATCH_SIZE)
