@@ -65,3 +65,5 @@ if __name__ == "__main__":
             accuracy) + '\n' + "Generated Text:" + str(gen_text) + '\n')
 
     Evaluator.plot_history_loss(history, filename)
+
+

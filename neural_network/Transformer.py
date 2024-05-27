@@ -69,3 +69,7 @@ class Transformer:
             text_generated += str(charr)
         return start_string + text_generated
 
+
+    def evaluate(self, x, y, bs):
+        tl, acc = self._model.evaluate(x, y, bs)
+        return tl, acc
